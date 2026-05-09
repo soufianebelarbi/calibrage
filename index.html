@@ -1,115 +1,138 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <meta name="author" content="Soufiane BELARBI">
   <meta name="developer" content="Soufiane BELARBI - Département Maintenance">
-
   <title>Analyse Automatique des Mesures</title>
   <style>
     :root{
       --primary:#0024d3;
       --secondary:#fa0157;
-
       --bg0:#0b1220;
       --bg1:#0f1b33;
-      --card: rgba(255,255,255,.08);
-      --card2: rgba(255,255,255,.06);
-      --stroke: rgba(255,255,255,.14);
+      --card:rgba(255,255,255,.08);
+      --card2:rgba(255,255,255,.06);
+      --stroke:rgba(255,255,255,.14);
       --text:#eaf0ff;
-      --muted: rgba(234,240,255,.72);
-      --shadow: 0 12px 30px rgba(0,0,0,.35);
-      --radius: 16px;
-
+      --muted:rgba(234,240,255,.72);
+      --shadow:0 12px 30px rgba(0,0,0,.35);
+      --radius:16px;
       --ok:#22c55e;
       --bad:#ef4444;
       --warn:#f59e0b;
-
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      --mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
     }
 
-    *{ box-sizing:border-box; }
+    *{ box-sizing:border-box; min-width:0; }
+
+    html{
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
+
     body{
       margin:0;
-      font-family: var(--sans);
-      color: var(--text);
-      min-height: 100vh;
+      font-family:var(--sans);
+      color:var(--text);
+      min-height:100vh;
       background:
         radial-gradient(1200px 700px at 15% 10%, rgba(0,36,211,.35), transparent 60%),
         radial-gradient(1100px 700px at 85% 20%, rgba(250,1,87,.18), transparent 60%),
         radial-gradient(900px 600px at 50% 95%, rgba(34,197,94,.10), transparent 55%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      padding: 28px 18px;
+      padding:28px 18px;
+      overflow-x:hidden;
     }
 
-    .wrap{ max-width: 1100px; margin: 0 auto; }
+    .wrap{ max-width:1100px; margin:0 auto; }
 
     header{
       display:flex;
       gap:16px;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
-      margin-bottom: 18px;
+      margin-bottom:18px;
     }
 
-    @media (max-width: 920px){
-      header{ flex-direction:column; align-items:flex-start; }
+    @media (max-width:920px){
+      header{
+        flex-direction:column;
+        align-items:stretch;
+      }
     }
 
     .brand{
       display:flex;
       gap:14px;
-      align-items:center;
+      align-items:flex-start;
+      flex:1 1 auto;
+      min-width:0;
+      width:100%;
     }
 
     .logo{
-      width: 150px;
-      height: auto;
+      width:150px;
+      max-width:40vw;
+      height:auto;
       display:block;
-      border-radius: 10px;
-      background: rgba(255,255,255,.90);
-      padding: 6px 10px;
-      border: 1px solid rgba(255,255,255,.18);
-      box-shadow: 0 10px 26px rgba(0,0,0,.25);
+      border-radius:10px;
+      background:rgba(255,255,255,.90);
+      padding:6px 10px;
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 10px 26px rgba(0,0,0,.25);
+      flex:0 0 auto;
     }
 
     .title{
       display:flex;
       flex-direction:column;
-      gap:6px;
-      padding-top: 0;
+      gap:8px;
+      flex:1 1 auto;
+      min-width:0;
+      width:100%;
     }
 
     h1{
       margin:0;
-      font-size: 22px;
-      letter-spacing: .2px;
-      line-height: 1.12;
+      font-size:clamp(1.05rem, 0.92rem + 1vw, 1.375rem);
+      letter-spacing:.2px;
+      line-height:1.15;
+      overflow-wrap:anywhere;
+      word-break:break-word;
     }
 
     .subtitle{
       margin:0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.35;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
     }
 
     .chip{
       display:inline-flex;
       gap:8px;
       align-items:center;
-      padding: 8px 12px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,.06);
-      border-radius: 999px;
-      box-shadow: 0 8px 20px rgba(0,0,0,.18);
-      color: var(--muted);
-      font-size: 12px;
+      padding:8px 12px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.06);
+      border-radius:999px;
+      box-shadow:0 8px 20px rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
       user-select:none;
-      white-space:nowrap;
+      max-width:100%;
+      min-width:0;
+    }
+
+    .chip span:last-child{
+      min-width:0;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      white-space:normal;
+      line-height:1.35;
     }
 
     .head-right{
@@ -118,9 +141,11 @@
       gap:12px;
       flex-wrap:wrap;
       justify-content:flex-end;
+      flex:0 1 auto;
+      min-width:0;
     }
 
-    @media (max-width: 920px){
+    @media (max-width:920px){
       .head-right{
         width:100%;
         justify-content:flex-start;
@@ -131,222 +156,312 @@
     .stack{
       display:flex;
       flex-direction:column;
-      gap: 14px;
+      gap:14px;
       align-items:stretch;
     }
 
     .card{
-      border: 1px solid var(--stroke);
-      background: linear-gradient(180deg, var(--card), var(--card2));
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, var(--card), var(--card2));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
       overflow:hidden;
+      min-width:0;
     }
 
     .card-head{
-      padding: 14px 16px;
+      padding:14px 16px;
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:12px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
+      border-bottom:1px solid rgba(255,255,255,.10);
       flex-wrap:wrap;
+      min-width:0;
     }
 
     .card-title{
       margin:0;
-      font-size: 14px;
-      color: rgba(234,240,255,.92);
+      font-size:14px;
+      color:rgba(234,240,255,.92);
       letter-spacing:.2px;
     }
 
-    .card-body{ padding: 14px 16px 16px; }
+    .card-body{ padding:14px 16px 16px; min-width:0; }
 
     textarea{
       width:100%;
-      min-height: 320px;
-      resize: vertical;
-      padding: 14px 14px;
-      font-family: var(--mono);
-      font-size: 12.5px;
-      line-height: 1.45;
-      color: rgba(234,240,255,.92);
-      background: rgba(0,0,0,.25);
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 14px;
-      outline: none;
+      min-height:320px;
+      resize:vertical;
+      padding:14px;
+      font-family:var(--mono);
+      font-size:12.5px;
+      line-height:1.45;
+      color:rgba(234,240,255,.92);
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:14px;
+      outline:none;
     }
+
     textarea:focus{
-      border-color: rgba(0,36,211,.70);
-      box-shadow: 0 0 0 4px rgba(0,36,211,.18);
+      border-color:rgba(0,36,211,.70);
+      box-shadow:0 0 0 4px rgba(0,36,211,.18);
     }
 
     .outtext{
       width:100%;
-      min-height: 160px;
-      resize: vertical;
-      padding: 12px 12px;
-      font-family: var(--mono);
-      font-size: 13px;
-      line-height: 1.45;
-      color: rgba(234,240,255,.92);
-      background: rgba(0,0,0,.22);
-      border:  1px solid rgba(255,255,255,.14);
-      border-radius: 14px;
+      min-height:160px;
+      resize:vertical;
+      padding:12px;
+      font-family:var(--mono);
+      font-size:13px;
+      line-height:1.45;
+      color:rgba(234,240,255,.92);
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:14px;
       outline:none;
-      white-space: pre;
+      white-space:pre;
     }
 
     .actions{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
-      margin-top: 12px;
+      margin-top:12px;
     }
 
     button{
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      padding: 10px 14px;
-      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:12px;
       cursor:pointer;
-      font-weight: 600;
-      font-size: 13px;
-      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      font-weight:600;
+      font-size:13px;
+      transition:transform .08s ease, background .2s ease, border-color .2s ease;
       user-select:none;
+      min-height:44px;
     }
+
     button:hover{
-      background: rgba(255,255,255,.10);
-      border-color: rgba(255,255,255,.22);
+      background:rgba(255,255,255,.10);
+      border-color:rgba(255,255,255,.22);
     }
-    button:active{ transform: translateY(1px); }
+
+    button:active{ transform:translateY(1px); }
 
     .primary{
-      border-color: rgba(0,36,211,.55);
-      background: linear-gradient(135deg, rgba(0,36,211,.95), rgba(250,1,87,.82));
-      box-shadow: 0 12px 30px rgba(0,36,211,.22);
+      border-color:rgba(0,36,211,.55);
+      background:linear-gradient(135deg, rgba(0,36,211,.95), rgba(250,1,87,.82));
+      box-shadow:0 12px 30px rgba(0,36,211,.22);
     }
-    .ghost{ background: transparent; }
 
-    .small-note{ margin: 10px 0 0; color: var(--muted); font-size: 12px; }
+    .ghost{ background:transparent; }
+
+    .small-note{ margin:10px 0 0; color:var(--muted); font-size:12px; }
 
     .dot{
-      width: 8px; height: 8px; border-radius: 999px;
-      background: var(--warn);
-      box-shadow: 0 0 0 3px rgba(245,158,11,.16);
-      flex: 0 0 auto;
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--warn);
+      box-shadow:0 0 0 3px rgba(245,158,11,.16);
+      flex:0 0 auto;
     }
-    .dot.ok{ background: var(--ok); box-shadow: 0 0 0 3px rgba(34,197,94,.16); }
-    .dot.bad{ background: var(--bad); box-shadow: 0 0 0 3px rgba(239,68,68,.16); }
+
+    .dot.ok{ background:var(--ok); box-shadow:0 0 0 3px rgba(34,197,94,.16); }
+    .dot.bad{ background:var(--bad); box-shadow:0 0 0 3px rgba(239,68,68,.16); }
 
     .badge{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--muted);
-      white-space:nowrap;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+      max-width:100%;
+      min-width:0;
+      white-space:normal;
+    }
+
+    .badge span:last-child{
+      overflow-wrap:anywhere;
+      word-break:break-word;
     }
 
     select{
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.20);
-      color: rgba(234,240,255,.92);
-      padding: 8px 10px;
-      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.20);
+      color:rgba(234,240,255,.92);
+      padding:8px 10px;
+      border-radius:12px;
       outline:none;
-      font-size: 13px;
+      font-size:13px;
+      min-height:44px;
+      max-width:100%;
     }
+
     select:focus{
-      border-color: rgba(250,1,87,.55);
-      box-shadow: 0 0 0 4px rgba(250,1,87,.16);
+      border-color:rgba(250,1,87,.55);
+      box-shadow:0 0 0 4px rgba(250,1,87,.16);
     }
 
     .hide{ display:none; }
 
     .kpis{
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
     }
-    @media (max-width: 520px){
-      .kpis{ grid-template-columns: 1fr; }
+
+    @media (max-width:520px){
+      .kpis{ grid-template-columns:1fr; }
     }
+
     .kpi{
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);
+      min-width:0;
     }
-    .kpi .label{ color: var(--muted); font-size: 12px; margin-bottom: 6px; }
-    .kpi .value{ font-size: 18px; font-weight: 800; letter-spacing:.2px; }
+
+    .kpi .label{ color:var(--muted); font-size:12px; margin-bottom:6px; }
+    .kpi .value{ font-size:18px; font-weight:800; letter-spacing:.2px; overflow-wrap:anywhere; }
 
     .section{
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(255,255,255,.10);
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px solid rgba(255,255,255,.10);
+      min-width:0;
     }
 
     .row{
       display:flex;
       justify-content:space-between;
       gap:12px;
-      padding: 8px 0;
-      border-bottom: 1px dashed rgba(255,255,255,.12);
+      padding:8px 0;
+      border-bottom:1px dashed rgba(255,255,255,.12);
+      min-width:0;
     }
-    .row:last-child{ border-bottom: none; }
-    .row .name{ color: rgba(234,240,255,.90); font-size: 13px; }
-    .row .val{ color: var(--muted); font-family: var(--mono); font-size: 12.5px; }
+
+    .row:last-child{ border-bottom:none; }
+    .row .name{ color:rgba(234,240,255,.90); font-size:13px; }
+    .row .val{ color:var(--muted); font-family:var(--mono); font-size:12.5px; text-align:right; overflow-wrap:anywhere; }
 
     .passes{
       display:grid;
       gap:10px;
-      grid-template-columns: 1fr;
+      grid-template-columns:1fr;
     }
+
     .passcard{
-      padding: 12px;
-      border-radius: 14px;
-      border:  1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
+      min-width:0;
     }
-    .passcard .side{ display:flex; flex-direction:column; gap:4px; }
-    .passcard .title2{ font-size: 13px; color: rgba(234,240,255,.92); }
+
+    .passcard .side{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+
+    .passcard .title2{ font-size:13px; color:rgba(234,240,255,.92); }
+    .muted{ color:var(--muted); font-size:12px; }
+
     .counts{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
       justify-content:flex-end;
       align-items:center;
-      font-family: var(--mono);
-      font-size: 12.5px;
+      font-family:var(--mono);
+      font-size:12.5px;
     }
+
     .pill{
       display:inline-flex;
       align-items:center;
       gap:7px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: rgba(234,240,255,.88);
-      font-size: 13.5px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:rgba(234,240,255,.88);
+      font-size:13.5px;
+      white-space:nowrap;
     }
-    .pill.ok{ border-color: rgba(34,197,94,.35); }
-    .pill.bad{ border-color: rgba(239,68,68,.35); }
 
-    .footer-note{ margin-top: 12px; color: rgba(234,240,255,.55); font-size: 11.5px; }
+    .pill.ok{ border-color:rgba(34,197,94,.35); }
+    .pill.bad{ border-color:rgba(239,68,68,.35); }
+
+    .footer-note{ margin-top:12px; color:rgba(234,240,255,.55); font-size:11.5px; overflow-wrap:anywhere; }
+
+    @media (max-width:640px){
+      body{ padding:16px 12px; }
+
+      .brand{
+        align-items:flex-start;
+        gap:10px;
+      }
+
+      .logo{
+        width:96px;
+        max-width:96px;
+        padding:4px 6px;
+      }
+
+      h1{
+        font-size:clamp(0.95rem, 0.85rem + 1.1vw, 1.1rem);
+      }
+
+      .chip{
+        width:100%;
+        border-radius:14px;
+        align-items:flex-start;
+      }
+
+      .head-right .chip{
+        width:100%;
+      }
+
+      .card-head,
+      .row,
+      .passcard{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .row .val{
+        text-align:left;
+      }
+
+      .counts{
+        justify-content:flex-start;
+      }
+
+      .actions button,
+      .card-head button,
+      .card-head select{
+        width:100%;
+      }
+    }
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <header>
@@ -395,7 +510,7 @@
         <div class="card-head">
           <h2 class="card-title">Résultats</h2>
 
-          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; min-width:0; width:100%; max-width:100%;">
             <select id="formatSelect" onchange="renderFormat()">
               <option value="minmax" selected>Min / Max (valeurs proches)</option>
               <option value="keys">Keys (copiable)</option>
@@ -483,9 +598,6 @@
   </div>
 
   <script>
-    // =========================
-    // UI status
-    // =========================
     function setStatus(ok, text){
       const dot = document.getElementById("statusDot");
       const t = document.getElementById("statusText");
@@ -510,9 +622,6 @@
       document.getElementById("boxKeys").classList.toggle("hide", v !== "keys");
     }
 
-    // =========================
-    // Helpers stats
-    // =========================
     function stats(values) {
       const v = values.filter(Number.isFinite);
       if (!v.length) return { min: null, max: null };
@@ -535,9 +644,6 @@
       ].join("\n");
     }
 
-    // =========================
-    // Robust "valeurs proches" filter (IQR)
-    // =========================
     function quantile(sorted, q){
       const pos = (sorted.length - 1) * q;
       const base = Math.floor(pos);
@@ -548,7 +654,7 @@
 
     function filterIQR(values, k = 1.5){
       const v = values.filter(Number.isFinite).slice().sort((a,b)=>a-b);
-      if (v.length < 4) return values.filter(Number.isFinite); // pas assez de points
+      if (v.length < 4) return values.filter(Number.isFinite);
       const q1 = quantile(v, 0.25);
       const q3 = quantile(v, 0.75);
       const iqr = q3 - q1;
@@ -557,10 +663,6 @@
       return values.filter(x => Number.isFinite(x) && x >= lo && x <= hi);
     }
 
-    // =========================
-    // Clipboard (writeText + fallback)
-    // writeText: fonctionne en contexte sécurisé (HTTPS) [MDN]
-    // =========================
     async function copierKeys(){
       const el = document.getElementById("keysText");
       const txt = (el.value || "").trim();
@@ -587,10 +689,6 @@
       }
     }
 
-    // =========================
-    // Allowlist input sanitize
-    // IMPORTANT: on autorise la virgule pour les décimales.
-    // =========================
     const NON_AUTORISES = /[^A-Za-z0-9 \t\r\n:._()|+\-,]/g;
 
     function appliquerAllowlist(raw){
@@ -599,92 +697,58 @@
         .replace(NON_AUTORISES, "");
     }
 
-    // =========================
-    // Extraction blocs stricts E / D / Dif
-    // matchAll() requiert une regex globale (flag g). [MDN]
-    // =========================
     function extraireTousLesBlocs(raw){
       const t = appliquerAllowlist(raw);
-
-      const sp   = String.raw`[ \t]*`;
-      const num2 = String.raw`-?\d+[.,]\d{2}`;     // accepte . ou ,
-      const d34  = String.raw`\d{3,4}`;
-      const sd34 = String.raw`-?\d{3,4}`;
-
-      const SEP  = String.raw`\n(?:[ \t]*\n)*`;
+      const sp = `[ \t]*`;
+      const num2 = `-?\\d+[.,]\\d{2}`;
+      const d34 = `\\d{3,4}`;
+      const sd34 = `-?\\d{3,4}`;
+      const SEP = `\\n(?:[ \t]*\\n)*`;
 
       function seg(label){
-        return String.raw`\(` + sp +
-          String.raw`HI_${label}`   + sp + ":" + sp + String.raw`[01]` + sp +
-          String.raw`\(` + sp + "MAX" + sp + ":" + sp + d34  + sp + String.raw`\)` + sp +
-          String.raw`\|` + sp +
-          String.raw`LOW_${label}`  + sp + ":" + sp + String.raw`[01]` + sp +
-          String.raw`\(` + sp + "MIN" + sp + ":" + sp + sd34 + sp + String.raw`\)` + sp +
-          String.raw`\|` + sp +
-          String.raw`PASS_${label}` + sp + ":" + sp + String.raw`[01]` + sp +
-        String.raw`\)`;
+        return `\\(${sp}HI_${label}${sp}:${sp}[01]${sp}\\(${sp}MAX${sp}:${sp}${d34}${sp}\\)${sp}\\|${sp}LOW_${label}${sp}:${sp}[01]${sp}\\(${sp}MIN${sp}:${sp}${sd34}${sp}\\)${sp}\\|${sp}PASS_${label}${sp}:${sp}[01]${sp}\\)`;
       }
 
-      const lineE   = String.raw`E${sp}:${sp}${num2}${sp}${seg("LEFT")}`;
-      const lineD   = String.raw`D${sp}:${sp}${num2}${sp}${seg("RIGHT")}`;
-      const lineDif = String.raw`Dif${sp}E-D${sp}:${sp}${num2}${sp}${seg("DIFF")}`;
-
-      const reBloc = new RegExp(String.raw`${lineE}${SEP}${lineD}${SEP}${lineDif}`, "g");
-
-      const blocs = [...t.matchAll(reBloc)].map(m => m[0].trim());
-      return blocs.join("\n\n");
+      const lineE = `E${sp}:${sp}${num2}${sp}${seg("LEFT")}`;
+      const lineD = `D${sp}:${sp}${num2}${sp}${seg("RIGHT")}`;
+      const lineDif = `Dif${sp}E-D${sp}:${sp}${num2}${sp}${seg("DIFF")}`;
+      const reBloc = new RegExp(`${lineE}${SEP}${lineD}${SEP}${lineDif}`, "g");
+      return [...t.matchAll(reBloc)].map(m => m[0].trim()).join("\n\n");
     }
 
     function extractValues(text, which){
-      const num = "(-?\\d+[.,]\\d{2})";
-      const toFloat = (s) => parseFloat(String(s).replace(",", "."));
-
-      if (which === "E"){
-        return [...text.matchAll(new RegExp("^\\s*E\\s*:\\s*" + num, "gm"))].map(m => toFloat(m[1]));
-      }
-      if (which === "D"){
-        return [...text.matchAll(new RegExp("^\\s*D\\s*:\\s*" + num, "gm"))].map(m => toFloat(m[1]));
-      }
-      if (which === "DIF"){
-        return [...text.matchAll(new RegExp("^\\s*Dif\\s*E-D\\s*:\\s*" + num, "gm"))].map(m => toFloat(m[1]));
-      }
-      return [];
+      const map = {
+        E: /^\s*E\s*:\s*(-?\d+[.,]\d{2})/gm,
+        D: /^\s*D\s*:\s*(-?\d+[.,]\d{2})/gm,
+        DIF: /^\s*Dif\s*E-D\s*:\s*(-?\d+[.,]\d{2})/gm
+      };
+      return [...text.matchAll(map[which] || /$^/gm)].map(m => parseFloat(m[1].replace(',', '.')));
     }
 
-    // =========================
-    // Main
-    // =========================
     function analyser() {
       const ta = document.getElementById("inputText");
       const raw = ta.value || "";
-
       const cleanedBlocs = extraireTousLesBlocs(raw);
 
-      if (raw.trim() && cleanedBlocs !== appliquerAllowlist(raw).trim()){
+      if (raw.trim() && cleanedBlocs !== appliquerAllowlist(raw).trim()) {
         ta.value = cleanedBlocs;
       }
 
       const text = cleanedBlocs;
-
-      // valeurs brutes
       const eValuesRaw = extractValues(text, "E");
       const dValuesRaw = extractValues(text, "D");
       const diffValuesRaw = extractValues(text, "DIF");
 
-      // valeurs "proches" (filtre IQR)
       const eValues = filterIQR(eValuesRaw, 1.5);
       const dValues = filterIQR(dValuesRaw, 1.5);
       const diffValues = filterIQR(diffValuesRaw, 1.5);
 
-      // PASS/FAIL: on compte sur le texte (on ne filtre pas, sinon on peut masquer des FAIL)
-      const passLeft  = (text.match(/PASS_LEFT\s*:\s*1/g)  || []).length;
-      const failLeft  = (text.match(/PASS_LEFT\s*:\s*0/g)  || []).length;
-
+      const passLeft = (text.match(/PASS_LEFT\s*:\s*1/g) || []).length;
+      const failLeft = (text.match(/PASS_LEFT\s*:\s*0/g) || []).length;
       const passRight = (text.match(/PASS_RIGHT\s*:\s*1/g) || []).length;
       const failRight = (text.match(/PASS_RIGHT\s*:\s*0/g) || []).length;
-
-      const passDiff  = (text.match(/PASS_DIFF\s*:\s*1/g)  || []).length;
-      const failDiff  = (text.match(/PASS_DIFF\s*:\s*0/g)  || []).length;
+      const passDiff = (text.match(/PASS_DIFF\s*:\s*1/g) || []).length;
+      const failDiff = (text.match(/PASS_DIFF\s*:\s*0/g) || []).length;
 
       const es = stats(eValues);
       const ds = stats(dValues);
@@ -694,14 +758,11 @@
       document.getElementById("nbBlocs").textContent = String(nbBlocs);
 
       const totalFails = failLeft + failRight + failDiff;
-      document.getElementById("etatGlobal").textContent =
-        nbBlocs ? (totalFails === 0 ? "OK" : "À vérifier") : "—";
+      document.getElementById("etatGlobal").textContent = nbBlocs ? (totalFails === 0 ? "OK" : "À vérifier") : "—";
 
       document.getElementById("estat").textContent = `${fmt(es.min)} / ${fmt(es.max)}`;
       document.getElementById("dstat").textContent = `${fmt(ds.min)} / ${fmt(ds.max)}`;
       document.getElementById("diffstat").textContent = `${fmt(difs.min)} / ${fmt(difs.max)}`;
-
-      // keys basées sur valeurs proches
       document.getElementById("keysText").value = buildKeysText(es, ds, difs);
 
       document.getElementById("pl").textContent = `✅ ${passLeft}`;
@@ -719,10 +780,10 @@
         ? `Filtre valeurs proches (IQR): outliers ignorés -> E:${removedE}, D:${removedD}, Dif:${removedF}`
         : "";
 
-      if (!raw.trim()){
+      if (!raw.trim()) {
         setStatus(null, "En attente d’un texte");
         setResStatus(false, "Aucun texte collé");
-      } else if (!text.trim()){
+      } else if (!text.trim()) {
         setStatus(false, "Texte collé, mais aucun bloc E/D/Dif valide trouvé");
         setResStatus(false, "Aucune mesure valide");
       } else {
@@ -758,7 +819,7 @@ Dif E-D: 95,00                               (HI_DIFF:  0 (MAX:0040) | LOW_DIFF:
 
     renderFormat();
     analyser();
-    document.getElementById("inputText").addEventListener("input", () => analyser());
+    document.getElementById("inputText").addEventListener("input", analyser);
   </script>
 </body>
 </html>
