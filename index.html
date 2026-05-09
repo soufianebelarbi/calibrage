@@ -512,8 +512,8 @@
 
           <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; min-width:0; width:100%; max-width:100%;">
             <select id="formatSelect" onchange="renderFormat()">
-              <option value="minmax" selected>Min / Max (valeurs proches)</option>
-              <option value="keys">Keys (copiable)</option>
+              <option value="keys" selected>Keys (copiable)</option>
+              <option value="minmax">Min / Max (valeurs proches)</option>
             </select>
 
             <button class="ghost" onclick="copierKeys()">Copier keys</button>
@@ -534,7 +534,7 @@
             </div>
           </div>
 
-          <div id="boxMinMax" class="section">
+          <div id="boxMinMax" class="section hide">
             <div class="row">
               <div class="name">E (min / max)</div>
               <div class="val" id="estat">N/A</div>
@@ -550,7 +550,7 @@
             <div class="footer-note" id="nearNote"></div>
           </div>
 
-          <div id="boxKeys" class="section hide">
+          <div id="boxKeys" class="section">
             <textarea id="keysText" class="outtext" readonly spellcheck="false"></textarea>
             <div class="footer-note">Texte prêt à copier/coller.</div>
           </div>
