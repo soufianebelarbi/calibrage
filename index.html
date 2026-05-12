@@ -157,7 +157,6 @@
       display:flex;
       flex-direction:column;
       gap:14px;
-      align-items:stretch;
     }
 
     .card{
@@ -411,6 +410,89 @@
 
     .footer-note{ margin-top:12px; color:rgba(234,240,255,.55); font-size:11.5px; overflow-wrap:anywhere; }
 
+    #appContent{ display:none; }
+
+    .login-dialog{
+      border:none;
+      padding:0;
+      background:transparent;
+      max-width:none;
+    }
+
+    .login-dialog::backdrop{
+      background:rgba(0,0,0,.72);
+      backdrop-filter:blur(6px);
+    }
+
+    .login-box{
+      width:min(92vw, 390px);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      padding:22px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg, rgba(15,27,51,.96), rgba(11,18,32,.98));
+      color:#eaf0ff;
+      box-shadow:0 20px 50px rgba(0,0,0,.45);
+    }
+
+    .login-box h2{
+      margin:0 0 6px;
+      font-size:1.2rem;
+      line-height:1.2;
+    }
+
+    .login-box p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .login-box label{
+      font-size:13px;
+      color:rgba(234,240,255,.82);
+      margin-top:2px;
+    }
+
+    .login-box input{
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.22);
+      color:#eaf0ff;
+      outline:none;
+    }
+
+    .login-box input:focus{
+      border-color:rgba(0,36,211,.70);
+      box-shadow:0 0 0 4px rgba(0,36,211,.18);
+    }
+
+    .login-actions{
+      display:flex;
+      gap:10px;
+      margin-top:8px;
+      flex-wrap:wrap;
+    }
+
+    .login-actions button{
+      flex:1 1 100%;
+    }
+
+    .login-error{
+      display:none;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(239,68,68,.28);
+      background:rgba(239,68,68,.12);
+      color:#ffd7dc;
+      font-size:12.5px;
+      line-height:1.4;
+    }
+
     @media (max-width:640px){
       body{ padding:16px 12px; }
 
@@ -463,141 +545,206 @@
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <img class="logo" src="logo-forvia-1-1.jpg" alt="FORVIA logo" />
-        <div class="title">
-          <h1>Analyse Automatique des Mesures</h1>
+  <dialog id="loginDialog" class="login-dialog" aria-labelledby="loginTitle">
+    <form id="loginForm" class="login-box">
+      <h2 id="loginTitle">Connexion requise</h2>
+      <p>Veuillez saisir votre login et votre mot de passe pour accéder à l'application.</p>
 
-          <div class="chip" aria-label="Signature développeur">
-            <span class="dot ok"></span>
-            <span>Développeur : Soufiane BELARBI | Département : Maintenance | Année : 2026</span>
-          </div>
+      <label for="loginUser">Login</label>
+      <input id="loginUser" type="text" autocomplete="username" required autofocus>
 
-          <p class="subtitle"></p>
-        </div>
+      <label for="loginPass">Mot de passe</label>
+      <input id="loginPass" type="password" autocomplete="current-password" required>
+
+      <div id="loginError" class="login-error">Identifiant ou mot de passe incorrect.</div>
+
+      <div class="login-actions">
+        <button type="submit" class="primary">Ouvrir l'application</button>
       </div>
+    </form>
+  </dialog>
 
-      <div class="head-right">
-        <div class="chip">
-          <span class="dot" id="statusDot"></span>
-          <span id="statusText">En attente d’un texte</span>
+  <div id="appContent">
+    <div class="wrap">
+      <header>
+        <div class="brand">
+          <img class="logo" src="logo-forvia-1-1.jpg" alt="FORVIA logo" />
+          <div class="title">
+            <h1>Analyse Automatique des Mesures</h1>
+
+            <div class="chip" aria-label="Signature développeur">
+              <span class="dot ok"></span>
+              <span>Développeur : Soufiane BELARBI | Département : Maintenance | Année : 2026</span>
+            </div>
+
+            <p class="subtitle"></p>
+          </div>
         </div>
+
+        <div class="head-right">
+          <div class="chip">
+            <span class="dot" id="statusDot"></span>
+            <span id="statusText">En attente d’un texte</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="stack">
+        <section class="card">
+          <div class="card-head">
+            <h2 class="card-title">Entrée</h2>
+            <span class="badge"><span class="dot"></span><span>Support: E/D/Dif + PASS_* (format strict)</span></span>
+          </div>
+          <div class="card-body">
+            <textarea id="inputText" placeholder="Colle ici ton bloc de texte..."></textarea>
+
+            <div class="actions">
+              <button class="primary" onclick="analyser()">Analyser</button>
+              <button class="ghost" onclick="effacer()">Effacer</button>
+              <button onclick="exemple()">Coller un exemple</button>
+            </div>
+
+            <p class="small-note">Mode strict: seules les lignes E/D/Dif sont analysées, le reste est ignoré.</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2 class="card-title">Résultats</h2>
+
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; min-width:0; width:100%; max-width:100%;">
+              <select id="formatSelect" onchange="renderFormat()">
+                <option value="keys" selected>Keys (copiable)</option>
+                <option value="minmax">Min / Max (valeurs proches)</option>
+              </select>
+
+              <button class="ghost" onclick="copierKeys()">Copier keys</button>
+
+              <span class="badge"><span class="dot" id="resDot"></span><span id="resText">Aucun résultat</span></span>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="kpis">
+              <div class="kpi">
+                <div class="label">Nombre de blocs</div>
+                <div class="value" id="nbBlocs">0</div>
+              </div>
+              <div class="kpi">
+                <div class="label">État global</div>
+                <div class="value" id="etatGlobal">—</div>
+              </div>
+            </div>
+
+            <div id="boxMinMax" class="section hide">
+              <div class="row">
+                <div class="name">E (min / max)</div>
+                <div class="val" id="estat">N/A</div>
+              </div>
+              <div class="row">
+                <div class="name">D (min / max)</div>
+                <div class="val" id="dstat">N/A</div>
+              </div>
+              <div class="row">
+                <div class="name">Dif E-D (min / max)</div>
+                <div class="val" id="diffstat">N/A</div>
+              </div>
+              <div class="footer-note" id="nearNote"></div>
+            </div>
+
+            <div id="boxKeys" class="section">
+              <textarea id="keysText" class="outtext" readonly spellcheck="false"></textarea>
+              <div class="footer-note">Texte prêt à copier/coller.</div>
+            </div>
+
+            <div class="section">
+              <div class="passes">
+                <div class="passcard">
+                  <div class="side">
+                    <div class="title2">PASS LEFT</div>
+                    <div class="muted">Comptage ✅ / ❌</div>
+                  </div>
+                  <div class="counts">
+                    <span class="pill ok" id="pl">✅ 0</span>
+                    <span class="pill bad" id="fl">❌ 0</span>
+                  </div>
+                </div>
+
+                <div class="passcard">
+                  <div class="side">
+                    <div class="title2">PASS RIGHT</div>
+                    <div class="muted">Comptage ✅ / ❌</div>
+                  </div>
+                  <div class="counts">
+                    <span class="pill ok" id="pr">✅ 0</span>
+                    <span class="pill bad" id="fr">❌ 0</span>
+                  </div>
+                </div>
+
+                <div class="passcard">
+                  <div class="side">
+                    <div class="title2">PASS DIFF</div>
+                    <div class="muted">Comptage ✅ / ❌</div>
+                  </div>
+                  <div class="counts">
+                    <span class="pill ok" id="pd">✅ 0</span>
+                    <span class="pill bad" id="fd">❌ 0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
       </div>
-    </header>
-
-    <div class="stack">
-      <section class="card">
-        <div class="card-head">
-          <h2 class="card-title">Entrée</h2>
-          <span class="badge"><span class="dot"></span><span>Support: E/D/Dif + PASS_* (format strict)</span></span>
-        </div>
-        <div class="card-body">
-          <textarea id="inputText" placeholder="Colle ici ton bloc de texte..."></textarea>
-
-          <div class="actions">
-            <button class="primary" onclick="analyser()">Analyser</button>
-            <button class="ghost" onclick="effacer()">Effacer</button>
-            <button onclick="exemple()">Coller un exemple</button>
-          </div>
-
-          <p class="small-note">Mode strict: seules les lignes E/D/Dif sont analysées, le reste est ignoré.</p>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="card-head">
-          <h2 class="card-title">Résultats</h2>
-
-          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; min-width:0; width:100%; max-width:100%;">
-            <select id="formatSelect" onchange="renderFormat()">
-              <option value="keys" selected>Keys (copiable)</option>
-              <option value="minmax">Min / Max (valeurs proches)</option>
-            </select>
-
-            <button class="ghost" onclick="copierKeys()">Copier keys</button>
-
-            <span class="badge"><span class="dot" id="resDot"></span><span id="resText">Aucun résultat</span></span>
-          </div>
-        </div>
-
-        <div class="card-body">
-          <div class="kpis">
-            <div class="kpi">
-              <div class="label">Nombre de blocs</div>
-              <div class="value" id="nbBlocs">0</div>
-            </div>
-            <div class="kpi">
-              <div class="label">État global</div>
-              <div class="value" id="etatGlobal">—</div>
-            </div>
-          </div>
-
-          <div id="boxMinMax" class="section hide">
-            <div class="row">
-              <div class="name">E (min / max)</div>
-              <div class="val" id="estat">N/A</div>
-            </div>
-            <div class="row">
-              <div class="name">D (min / max)</div>
-              <div class="val" id="dstat">N/A</div>
-            </div>
-            <div class="row">
-              <div class="name">Dif E-D (min / max)</div>
-              <div class="val" id="diffstat">N/A</div>
-            </div>
-            <div class="footer-note" id="nearNote"></div>
-          </div>
-
-          <div id="boxKeys" class="section">
-            <textarea id="keysText" class="outtext" readonly spellcheck="false"></textarea>
-            <div class="footer-note">Texte prêt à copier/coller.</div>
-          </div>
-
-          <div class="section">
-            <div class="passes">
-              <div class="passcard">
-                <div class="side">
-                  <div class="title2">PASS LEFT</div>
-                  <div class="muted">Comptage ✅ / ❌</div>
-                </div>
-                <div class="counts">
-                  <span class="pill ok" id="pl">✅ 0</span>
-                  <span class="pill bad" id="fl">❌ 0</span>
-                </div>
-              </div>
-
-              <div class="passcard">
-                <div class="side">
-                  <div class="title2">PASS RIGHT</div>
-                  <div class="muted">Comptage ✅ / ❌</div>
-                </div>
-                <div class="counts">
-                  <span class="pill ok" id="pr">✅ 0</span>
-                  <span class="pill bad" id="fr">❌ 0</span>
-                </div>
-              </div>
-
-              <div class="passcard">
-                <div class="side">
-                  <div class="title2">PASS DIFF</div>
-                  <div class="muted">Comptage ✅ / ❌</div>
-                </div>
-                <div class="counts">
-                  <span class="pill ok" id="pd">✅ 0</span>
-                  <span class="pill bad" id="fd">❌ 0</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
     </div>
   </div>
 
   <script>
+    const VALID_USER = "1";
+    const VALID_PASS = "wlcoxbksn";
+
+    const loginDialog = document.getElementById("loginDialog");
+    const loginForm = document.getElementById("loginForm");
+    const loginError = document.getElementById("loginError");
+    const appContent = document.getElementById("appContent");
+
+    function ouvrirApp(){
+      appContent.style.display = "block";
+      if (loginDialog.open) loginDialog.close();
+      renderFormat();
+      analyser();
+      const input = document.getElementById("inputText");
+      if (input) input.focus();
+    }
+
+    function afficherLogin(){
+      appContent.style.display = "none";
+      if (typeof loginDialog.showModal === "function") {
+        loginDialog.showModal();
+      } else {
+        loginDialog.setAttribute("open", "open");
+      }
+    }
+
+    window.addEventListener("load", () => {
+      afficherLogin();
+    });
+
+    loginForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      const user = document.getElementById("loginUser").value.trim();
+      const pass = document.getElementById("loginPass").value;
+
+      if (user === VALID_USER && pass === VALID_PASS) {
+        loginError.style.display = "none";
+        ouvrirApp();
+      } else {
+        loginError.style.display = "block";
+        document.getElementById("loginPass").select();
+      }
+    });
+
     function setStatus(ok, text){
       const dot = document.getElementById("statusDot");
       const t = document.getElementById("statusText");
@@ -671,7 +818,6 @@
       try{
         await navigator.clipboard.writeText(txt);
         setResStatus(true, "Keys copiés");
-        setTimeout(() => analyser(), 700);
       }catch(e){
         const ta = document.createElement("textarea");
         ta.value = txt;
@@ -685,7 +831,6 @@
         try{ document.execCommand("copy"); } catch(_) {}
         document.body.removeChild(ta);
         setResStatus(true, "Keys copiés (fallback)");
-        setTimeout(() => analyser(), 700);
       }
     }
 
@@ -816,10 +961,6 @@ D: 0,00                                      (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT
 Dif E-D: 95,00                               (HI_DIFF:  0 (MAX:0040) | LOW_DIFF:  0 (MIN:-350) | PASS_DIFF:  1)`;
       analyser();
     }
-
-    renderFormat();
-    analyser();
-    document.getElementById("inputText").addEventListener("input", analyser);
   </script>
 </body>
 </html>
