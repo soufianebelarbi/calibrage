@@ -6,111 +6,637 @@
   <meta name="author" content="Soufiane BELARBI" />
   <meta name="developer" content="Soufiane BELARBI - Département Maintenance" />
   <title>Analyse Automatique des Mesures</title>
+
   <style>
-    :root{
-      --primary:#0024d3; --secondary:#fa0157; --bg0:#0b1220; --bg1:#0f1b33;
-      --card:rgba(255,255,255,.08); --card2:rgba(255,255,255,.06);
-      --stroke:rgba(255,255,255,.14); --text:#eaf0ff; --muted:rgba(234,240,255,.72);
-      --shadow:0 12px 30px rgba(0,0,0,.35); --radius:16px;
-      --ok:#22c55e; --bad:#ef4444; --warn:#f59e0b;
-      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-      --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans","Liberation Sans",sans-serif;
+    /* =========================
+       VARIABLES DU THÈME
+       ========================= */
+    :root {
+      --primary: #0024d3;
+      --secondary: #fa0157;
+      --bg0: #0b1220;
+      --bg1: #0f1b33;
+      --card: rgba(255,255,255,.08);
+      --card2: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.14);
+      --text: #eaf0ff;
+      --muted: rgba(234,240,255,.72);
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --ok: #22c55e;
+      --bad: #ef4444;
+      --warn: #f59e0b;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+        Arial, "Noto Sans", "Liberation Sans", sans-serif;
     }
-    *{box-sizing:border-box;min-width:0}
-    html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-    body{margin:0;font-family:var(--sans);color:var(--text);min-height:100vh;background:radial-gradient(1200px 700px at 15% 10%,rgba(0,36,211,.35),transparent 60%),radial-gradient(1100px 700px at 85% 20%,rgba(250,1,87,.18),transparent 60%),radial-gradient(900px 600px at 50% 95%,rgba(34,197,94,.10),transparent 55%),linear-gradient(180deg,var(--bg0),var(--bg1));padding:28px 18px;overflow-x:hidden}
-    .wrap{max-width:1100px;margin:0 auto}
-    header{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
-    .brand{display:flex;gap:14px;align-items:flex-start;flex:1 1 auto;width:100%}
-    .logo{width:150px;max-width:40vw;height:auto;display:block;border-radius:10px;background:rgba(255,255,255,.9);padding:6px 10px;border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 26px rgba(0,0,0,.25);flex:0 0 auto}
-    .title{display:flex;flex-direction:column;gap:8px;flex:1 1 auto;width:100%}
-    h1{margin:0;font-size:clamp(1.05rem,.92rem + 1vw,1.375rem);letter-spacing:.2px;line-height:1.15;overflow-wrap:anywhere}
-    .subtitle{margin:0;color:var(--muted);font-size:13px;line-height:1.35}
-    .chip{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--stroke);background:rgba(255,255,255,.06);border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,.18);color:var(--muted);font-size:12px;user-select:none;max-width:100%}
-    .chip span:last-child,.badge span:last-child{min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}
-    .head-right{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;justify-content:flex-end;flex:0 1 auto}
-    .stack{display:flex;flex-direction:column;gap:14px}
-    .card{border:1px solid var(--stroke);background:linear-gradient(180deg,var(--card),var(--card2));border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-    .card-head{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.1);flex-wrap:wrap}
-    .card-title{margin:0;font-size:14px;color:rgba(234,240,255,.92);letter-spacing:.2px}
-    .card-body{padding:14px 16px 16px}
-    textarea{width:100%;min-height:320px;resize:vertical;padding:14px;font-family:var(--mono);font-size:12.5px;line-height:1.45;color:rgba(234,240,255,.92);background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.14);border-radius:14px;outline:none}
-    textarea:focus,input:focus{border-color:rgba(0,36,211,.7);box-shadow:0 0 0 4px rgba(0,36,211,.18)}
-    .outtext{min-height:160px;padding:12px;font-size:13px;white-space:pre}
-    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-    button{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;font-size:13px;transition:transform .08s ease,background .2s ease,border-color .2s ease;user-select:none;min-height:44px}
-    button:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22)}
-    button:active{transform:translateY(1px)}
-    .primary{border-color:rgba(0,36,211,.55);background:linear-gradient(135deg,rgba(0,36,211,.95),rgba(250,1,87,.82));box-shadow:0 12px 30px rgba(0,36,211,.22)}
-    .ghost{background:transparent}.small-note{margin:10px 0 0;color:var(--muted);font-size:12px}
-    .dot{width:8px;height:8px;border-radius:999px;background:var(--warn);box-shadow:0 0 0 3px rgba(245,158,11,.16);flex:0 0 auto}.dot.ok{background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.16)}.dot.bad{background:var(--bad);box-shadow:0 0 0 3px rgba(239,68,68,.16)}
-    .badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--muted);max-width:100%}
-    select{border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.2);color:rgba(234,240,255,.92);padding:8px 10px;border-radius:12px;outline:none;font-size:13px;min-height:44px;max-width:100%}
-    .hide{display:none}.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}.kpi{padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18)}.kpi .label{color:var(--muted);font-size:12px;margin-bottom:6px}.kpi .value{font-size:18px;font-weight:800;letter-spacing:.2px;overflow-wrap:anywhere}
-    .section{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}.row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.12)}.row:last-child{border-bottom:none}.row .name{color:rgba(234,240,255,.9);font-size:13px}.row .val{color:var(--muted);font-family:var(--mono);font-size:12.5px;text-align:right;overflow-wrap:anywhere}
-    .passes{display:grid;gap:10px;grid-template-columns:1fr}.passcard{padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);display:flex;align-items:center;justify-content:space-between;gap:12px}.passcard .side{display:flex;flex-direction:column;gap:4px}.passcard .title2{font-size:13px;color:rgba(234,240,255,.92)}.muted{color:var(--muted);font-size:12px}.counts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center;font-family:var(--mono);font-size:12.5px}.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:rgba(234,240,255,.88);font-size:13.5px;white-space:nowrap}.pill.ok{border-color:rgba(34,197,94,.35)}.pill.bad{border-color:rgba(239,68,68,.35)}.footer-note{margin-top:12px;color:rgba(234,240,255,.55);font-size:11.5px;overflow-wrap:anywhere}
-    #appContent{display:none}.login-dialog{border:none;padding:0;background:transparent;max-width:none}.login-dialog::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(6px)}.login-box{width:min(92vw,390px);display:flex;flex-direction:column;gap:12px;padding:22px;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(15,27,51,.96),rgba(11,18,32,.98));color:#eaf0ff;box-shadow:0 20px 50px rgba(0,0,0,.45)}.login-box h2{margin:0 0 6px;font-size:1.2rem;line-height:1.2}.login-box p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}.login-box label{font-size:13px;color:rgba(234,240,255,.82);margin-top:2px}.login-box input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.22);color:#eaf0ff;outline:none}.login-actions{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}.login-actions button{flex:1 1 100%}.login-error{display:none;padding:10px 12px;border-radius:12px;border:1px solid rgba(239,68,68,.28);background:rgba(239,68,68,.12);color:#ffd7dc;font-size:12.5px;line-height:1.4}
-    @media(max-width:920px){header{flex-direction:column;align-items:stretch}.head-right{width:100%;justify-content:flex-start;align-items:flex-start}}
-    @media(max-width:640px){body{padding:16px 12px}.brand{gap:10px}.logo{width:96px;max-width:96px;padding:4px 6px}h1{font-size:clamp(.95rem,.85rem + 1.1vw,1.1rem)}.chip{width:100%;border-radius:14px;align-items:flex-start}.card-head,.row,.passcard{flex-direction:column;align-items:flex-start}.row .val{text-align:left}.counts{justify-content:flex-start}.actions button,.card-head button,.card-head select{width:100%}}
-    @media(max-width:520px){.kpis{grid-template-columns:1fr}}
+
+    /* =========================
+       RÈGLES GÉNÉRALES
+       ========================= */
+    * { box-sizing: border-box; min-width: 0; }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 28px 18px;
+      overflow-x: hidden;
+      color: var(--text);
+      font-family: var(--sans);
+      background:
+        radial-gradient(1200px 700px at 15% 10%, rgba(0,36,211,.35), transparent 60%),
+        radial-gradient(1100px 700px at 85% 20%, rgba(250,1,87,.18), transparent 60%),
+        radial-gradient(900px 600px at 50% 95%, rgba(34,197,94,.10), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+    }
+
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    .hide { display: none; }
+
+    /* =========================
+       EN-TÊTE DE L'APPLICATION
+       ========================= */
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      flex: 1 1 auto;
+      width: 100%;
+    }
+
+    .logo {
+      display: block;
+      width: 150px;
+      max-width: 40vw;
+      height: auto;
+      padding: 6px 10px;
+      flex: 0 0 auto;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 10px;
+      background: rgba(255,255,255,.90);
+      box-shadow: 0 10px 26px rgba(0,0,0,.25);
+    }
+
+    .title {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1 1 auto;
+      width: 100%;
+    }
+
+    h1 {
+      margin: 0;
+      overflow-wrap: anywhere;
+      font-size: clamp(1.05rem, .92rem + 1vw, 1.375rem);
+      line-height: 1.15;
+      letter-spacing: .2px;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .head-right {
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      flex: 0 1 auto;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* =========================
+       BADGES, PUCES ET ÉTATS
+       ========================= */
+    .chip,
+    .badge,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 100%;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.18);
+      font-size: 12px;
+      user-select: none;
+    }
+
+    .badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .chip span:last-child,
+    .badge span:last-child {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      line-height: 1.35;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--warn);
+      box-shadow: 0 0 0 3px rgba(245,158,11,.16);
+    }
+
+    .dot.ok {
+      background: var(--ok);
+      box-shadow: 0 0 0 3px rgba(34,197,94,.16);
+    }
+
+    .dot.bad {
+      background: var(--bad);
+      box-shadow: 0 0 0 3px rgba(239,68,68,.16);
+    }
+
+    /* =========================
+       CARTES ET STRUCTURE
+       ========================= */
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card {
+      overflow: hidden;
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      box-shadow: var(--shadow);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      margin: 0;
+      color: rgba(234,240,255,.92);
+      font-size: 14px;
+      letter-spacing: .2px;
+    }
+
+    .card-body { padding: 14px 16px 16px; }
+
+    /* =========================
+       CHAMPS ET BOUTONS
+       ========================= */
+    textarea,
+    input,
+    select {
+      outline: none;
+    }
+
+    textarea {
+      width: 100%;
+      resize: vertical;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      color: rgba(234,240,255,.92);
+      background: rgba(0,0,0,.25);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    #inputText { min-height: 320px; }
+
+    .outtext {
+      min-height: 160px;
+      padding: 12px;
+      white-space: pre;
+      font-size: 13px;
+      background: rgba(0,0,0,.22);
+    }
+
+    textarea:focus,
+    input:focus,
+    select:focus {
+      border-color: rgba(0,36,211,.70);
+      box-shadow: 0 0 0 4px rgba(0,36,211,.18);
+    }
+
+    input,
+    select {
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 12px;
+      color: rgba(234,240,255,.92);
+      background: rgba(0,0,0,.22);
+    }
+
+    select {
+      min-height: 44px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    button {
+      min-height: 44px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 12px;
+      color: var(--text);
+      background: rgba(255,255,255,.06);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select: none;
+    }
+
+    button:hover {
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.10);
+    }
+
+    button:active { transform: translateY(1px); }
+
+    .primary {
+      border-color: rgba(0,36,211,.55);
+      background: linear-gradient(135deg, rgba(0,36,211,.95), rgba(250,1,87,.82));
+      box-shadow: 0 12px 30px rgba(0,36,211,.22);
+    }
+
+    .ghost { background: transparent; }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .small-note,
+    .footer-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .small-note { margin: 10px 0 0; }
+    .footer-note { margin-top: 12px; color: rgba(234,240,255,.55); font-size: 11.5px; }
+
+    /* =========================
+       ZONE DES RÉSULTATS
+       ========================= */
+    .kpis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .kpi,
+    .passcard {
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      background: rgba(0,0,0,.18);
+    }
+
+    .kpi { padding: 12px; }
+    .kpi .label { margin-bottom: 6px; color: var(--muted); font-size: 12px; }
+    .kpi .value { overflow-wrap: anywhere; font-size: 18px; font-weight: 800; letter-spacing: .2px; }
+
+    .section {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,.10);
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px dashed rgba(255,255,255,.12);
+    }
+
+    .row:last-child { border-bottom: none; }
+    .row .name { color: rgba(234,240,255,.90); font-size: 13px; }
+    .row .val { color: var(--muted); font-family: var(--mono); font-size: 12.5px; text-align: right; overflow-wrap: anywhere; }
+
+    .passes { display: grid; grid-template-columns: 1fr; gap: 10px; }
+
+    .passcard {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .passcard .side { display: flex; flex-direction: column; gap: 4px; }
+    .passcard .title2 { color: rgba(234,240,255,.92); font-size: 13px; }
+    .muted { color: var(--muted); font-size: 12px; }
+
+    .counts {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-family: var(--mono);
+      font-size: 12.5px;
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: rgba(234,240,255,.88);
+      font-size: 13.5px;
+      white-space: nowrap;
+    }
+
+    .pill.ok { border-color: rgba(34,197,94,.35); }
+    .pill.bad { border-color: rgba(239,68,68,.35); }
+
+    /* =========================
+       FENÊTRE DE CONNEXION
+       ========================= */
+    #appContent { display: none; }
+
+    .login-dialog {
+      max-width: none;
+      padding: 0;
+      border: none;
+      background: transparent;
+    }
+
+    .login-dialog::backdrop {
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(6px);
+    }
+
+    .login-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: min(92vw, 390px);
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 16px;
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(15,27,51,.96), rgba(11,18,32,.98));
+      box-shadow: 0 20px 50px rgba(0,0,0,.45);
+    }
+
+    .login-box h2 { margin: 0 0 6px; font-size: 1.2rem; line-height: 1.2; }
+    .login-box p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .login-box label { margin-top: 2px; color: rgba(234,240,255,.82); font-size: 13px; }
+    .login-actions { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+    .login-actions button { flex: 1 1 100%; }
+
+    .login-error {
+      display: none;
+      padding: 10px 12px;
+      border: 1px solid rgba(239,68,68,.28);
+      border-radius: 12px;
+      color: #ffd7dc;
+      background: rgba(239,68,68,.12);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+
+    /* =========================
+       RESPONSIVE DESIGN
+       ========================= */
+    @media (max-width: 920px) {
+      header { flex-direction: column; align-items: stretch; }
+      .head-right { width: 100%; justify-content: flex-start; align-items: flex-start; }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 16px 12px; }
+      .brand { gap: 10px; }
+      .logo { width: 96px; max-width: 96px; padding: 4px 6px; }
+      h1 { font-size: clamp(.95rem, .85rem + 1.1vw, 1.1rem); }
+      .chip { width: 100%; align-items: flex-start; border-radius: 14px; }
+      .card-head, .row, .passcard { flex-direction: column; align-items: flex-start; }
+      .row .val { text-align: left; }
+      .counts { justify-content: flex-start; }
+      .actions button, .card-head button, .card-head select { width: 100%; }
+    }
+
+    @media (max-width: 520px) {
+      .kpis { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
+  <!-- =========================
+       FENÊTRE DE CONNEXION
+       ========================= -->
   <dialog id="loginDialog" class="login-dialog" aria-labelledby="loginTitle">
     <form id="loginForm" class="login-box">
       <h2 id="loginTitle">Connexion requise</h2>
       <p>Veuillez saisir votre login et votre mot de passe pour accéder à l'application.</p>
+
       <label for="loginUser">Login</label>
       <input id="loginUser" type="text" autocomplete="username" required autofocus />
+
       <label for="loginPass">Mot de passe</label>
       <input id="loginPass" type="password" autocomplete="current-password" required />
-      <div id="loginError" class="login-error">Identifiant ou mot de passe incorrect.</div>
-      <div class="login-actions"><button type="submit" class="primary">Ouvrir l'application</button></div>
+
+      <div id="loginError" class="login-error">
+        Identifiant ou mot de passe incorrect.
+      </div>
+
+      <div class="login-actions">
+        <button type="submit" class="primary">Ouvrir l'application</button>
+      </div>
     </form>
   </dialog>
 
+  <!-- =========================
+       CONTENU PRINCIPAL
+       ========================= -->
   <div id="appContent">
     <div class="wrap">
       <header>
         <div class="brand">
           <img class="logo" src="logo-forvia-1-1.jpg" alt="FORVIA logo" />
+
           <div class="title">
             <h1>Analyse Automatique des Mesures</h1>
-            <div class="chip" aria-label="Signature développeur"><span class="dot ok"></span><span>Développeur : Soufiane BELARBI | Département : Maintenance | Année : 2026</span></div>
+
+            <div class="chip" aria-label="Signature développeur">
+              <span class="dot ok"></span>
+              <span>Développeur : Soufiane BELARBI | Département : Maintenance | Année : 2026</span>
+            </div>
+
             <p class="subtitle" id="userWelcome"></p>
           </div>
         </div>
-        <div class="head-right"><div class="chip"><span class="dot" id="statusDot"></span><span id="statusText">En attente d’un texte</span></div></div>
+
+        <div class="head-right">
+          <div class="chip">
+            <span class="dot" id="statusDot"></span>
+            <span id="statusText">En attente d’un texte</span>
+          </div>
+        </div>
       </header>
 
       <div class="stack">
+        <!-- =========================
+             CARTE D'IMPORTATION
+             ========================= -->
         <section class="card">
-          <div class="card-head"><h2 class="card-title">Entrée</h2><span class="badge"><span class="dot"></span><span>Support: E/D/Dif + PASS_* (format strict)</span></span></div>
+          <div class="card-head">
+            <h2 class="card-title">Entrée</h2>
+            <span class="badge">
+              <span class="dot"></span>
+              <span>Support: E/D/Dif + PASS_* (format strict)</span>
+            </span>
+          </div>
+
           <div class="card-body">
             <textarea id="inputText" placeholder="Colle ici ton bloc de texte..."></textarea>
-            <div class="actions"><button class="primary" onclick="analyser()">Analyser</button><button class="ghost" onclick="effacer()">Effacer</button><button onclick="exemple()">Coller un exemple</button></div>
-            <p class="small-note">Mode strict: seules les lignes E/D/Dif sont analysées, le reste est ignoré.</p>
+
+            <div class="actions">
+              <button class="primary" onclick="analyser()">Analyser</button>
+              <button class="ghost" onclick="effacer()">Effacer</button>
+              <button onclick="exemple()">Coller un exemple</button>
+            </div>
+
+            <p class="small-note">
+              Mode strict : seules les lignes E/D/Dif sont analysées, le reste est ignoré.
+            </p>
           </div>
         </section>
 
+        <!-- =========================
+             CARTE DES RÉSULTATS
+             ========================= -->
         <section class="card">
           <div class="card-head">
             <h2 class="card-title">Résultats</h2>
+
             <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;min-width:0;width:100%;max-width:100%;">
-              <select id="formatSelect" onchange="renderFormat"><option value="keys" selected>Keys (copiable)</option><option value="minmax">Min / Max (valeurs proches)</option></select>
+              <select id="formatSelect" onchange="renderFormat()">
+                <option value="keys" selected>Keys (copiable)</option>
+                <option value="minmax">Min / Max (valeurs proches)</option>
+              </select>
+
               <button class="ghost" onclick="copierKeys()">Copier keys</button>
-              <span class="badge"><span class="dot" id="resDot"></span><span id="resText">Aucun résultat</span></span>
+
+              <span class="badge">
+                <span class="dot" id="resDot"></span>
+                <span id="resText">Aucun résultat</span>
+              </span>
             </div>
           </div>
+
           <div class="card-body">
-            <div class="kpis"><div class="kpi"><div class="label">Nombre de blocs</div><div class="value" id="nbBlocs">0</div></div><div class="kpi"><div class="label">État global</div><div class="value" id="etatGlobal">—</div></div></div>
-            <div id="boxMinMax" class="section hide"><div class="row"><div class="name">E (min / max)</div><div class="val" id="estat">N/A</div></div><div class="row"><div class="name">D (min / max)</div><div class="val" id="dstat">N/A</div></div><div class="row"><div class="name">Dif E-D (min / max)</div><div class="val" id="diffstat">N/A</div></div><div class="footer-note" id="nearNote"></div></div>
-            <div id="boxKeys" class="section"><textarea id="keysText" class="outtext" readonly spellcheck="false"></textarea><div class="footer-note">Texte prêt à copier/coller.</div></div>
-            <div class="section"><div class="passes">
-              <div class="passcard"><div class="side"><div class="title2">PASS LEFT</div><div class="muted">Comptage ✅ / ❌</div></div><div class="counts"><span class="pill ok" id="pl">✅ 0</span><span class="pill bad" id="fl">❌ 0</span></div></div>
-              <div class="passcard"><div class="side"><div class="title2">PASS RIGHT</div><div class="muted">Comptage ✅ / ❌</div></div><div class="counts"><span class="pill ok" id="pr">✅ 0</span><span class="pill bad" id="fr">❌ 0</span></div></div>
-              <div class="passcard"><div class="side"><div class="title2">PASS DIFF</div><div class="muted">Comptage ✅ / ❌</div></div><div class="counts"><span class="pill ok" id="pd">✅ 0</span><span class="pill bad" id="fd">❌ 0</span></div></div>
-            </div></div>
+            <!-- Indicateurs principaux -->
+            <div class="kpis">
+              <div class="kpi">
+                <div class="label">Nombre de blocs</div>
+                <div class="value" id="nbBlocs">0</div>
+              </div>
+
+              <div class="kpi">
+                <div class="label">État global</div>
+                <div class="value" id="etatGlobal">—</div>
+              </div>
+            </div>
+
+            <!-- Résultats Min/Max -->
+            <div id="boxMinMax" class="section hide">
+              <div class="row">
+                <div class="name">E (min / max)</div>
+                <div class="val" id="estat">N/A</div>
+              </div>
+              <div class="row">
+                <div class="name">D (min / max)</div>
+                <div class="val" id="dstat">N/A</div>
+              </div>
+              <div class="row">
+                <div class="name">Dif E-D (min / max)</div>
+                <div class="val" id="diffstat">N/A</div>
+              </div>
+              <div class="footer-note" id="nearNote"></div>
+            </div>
+
+            <!-- Résultats sous forme de clés -->
+            <div id="boxKeys" class="section">
+              <textarea id="keysText" class="outtext" readonly spellcheck="false"></textarea>
+              <div class="footer-note">Texte prêt à copier/coller.</div>
+            </div>
+
+            <!-- Comptage des PASS et FAIL -->
+            <div class="section">
+              <div class="passes">
+                <div class="passcard">
+                  <div class="side">
+                    <div class="title2">PASS LEFT</div>
+                    <div class="muted">Comptage ✅ / ❌</div>
+                  </div>
+                  <div class="counts">
+                    <span class="pill ok" id="pl">✅ 0</span>
+                    <span class="pill bad" id="fl">❌ 0</span>
+                  </div>
+                </div>
+
+                <div class="passcard">
+                  <div class="side">
+                    <div class="title2">PASS RIGHT</div>
+                    <div class="muted">Comptage ✅ / ❌</div>
+                  </div>
+                  <div class="counts">
+                    <span class="pill ok" id="pr">✅ 0</span>
+                    <span class="pill bad" id="fr">❌ 0</span>
+                  </div>
+                </div>
+
+                <div class="passcard">
+                  <div class="side">
+                    <div class="title2">PASS DIFF</div>
+                    <div class="muted">Comptage ✅ / ❌</div>
+                  </div>
+                  <div class="counts">
+                    <span class="pill ok" id="pd">✅ 0</span>
+                    <span class="pill bad" id="fd">❌ 0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </div>
@@ -118,7 +644,23 @@
   </div>
 
   <script>
-    // Ajoutez ou modifiez les comptes dans cette liste.
+    /* =========================================================
+       1. COMPTES UTILISATEURS
+       =========================================================
+       Ajoutez ou modifiez les comptes dans cette liste.
+
+       - login    : identifiant saisi par l'utilisateur.
+       - password : mot de passe associé au login.
+       - name     : nom affiché après la connexion.
+
+       Exemple pour ajouter un compte :
+       { login: "magasin", password: "magasin2026", name: "Magasin" }
+
+       Attention : dans une application frontend, ces informations
+       peuvent être visibles dans le code source du navigateur.
+       Cette méthode convient à un prototype ou à un usage local,
+       mais elle ne remplace pas une authentification serveur.
+       ========================================================= */
     const USERS = [
       { login: "1", password: "wlcoxbksn", name: "Administrateur" },
       { login: "maintenance", password: "maint2026", name: "Maintenance" },
@@ -126,43 +668,448 @@
       { login: "qualite", password: "qualite2026", name: "Qualité" }
     ];
 
-    const loginDialog=document.getElementById("loginDialog"),loginForm=document.getElementById("loginForm"),loginError=document.getElementById("loginError"),appContent=document.getElementById("appContent");
+    /* =========================================================
+       2. RÉCUPÉRATION DES ÉLÉMENTS HTML
+       =========================================================
+       On récupère les éléments importants de la page afin de
+       pouvoir les afficher, les masquer ou modifier leur contenu.
+       ========================================================= */
+    const loginDialog = document.getElementById("loginDialog");
+    const loginForm = document.getElementById("loginForm");
+    const loginError = document.getElementById("loginError");
+    const appContent = document.getElementById("appContent");
 
-    function ouvrirApp(){
-      appContent.style.display="block";
-      if(loginDialog.open)loginDialog.close();
-      const userName=sessionStorage.getItem("userName");
-      const welcome=document.getElementById("userWelcome");
-      if(welcome&&userName)welcome.textContent=`Utilisateur connecté : ${userName}`;
-      renderFormat(); analyser(); document.getElementById("inputText").focus();
+    /* =========================================================
+       3. OUVERTURE ET AFFICHAGE DE L'APPLICATION
+       ========================================================= */
+    function ouvrirApp() {
+      // Affiche le contenu principal après une connexion réussie.
+      appContent.style.display = "block";
+
+      // Ferme la fenêtre de connexion si elle est ouverte.
+      if (loginDialog.open) {
+        loginDialog.close();
+      }
+
+      // Récupère et affiche le nom de l'utilisateur connecté.
+      const userName = sessionStorage.getItem("userName");
+      const welcome = document.getElementById("userWelcome");
+
+      if (welcome && userName) {
+        welcome.textContent = `Utilisateur connecté : ${userName}`;
+      }
+
+      // Initialise l'affichage et lance une première analyse.
+      renderFormat();
+      analyser();
+
+      // Place le curseur dans la zone de texte.
+      document.getElementById("inputText").focus();
     }
-    function afficherLogin(){appContent.style.display="none";if(typeof loginDialog.showModal==="function")loginDialog.showModal();else loginDialog.setAttribute("open","open")}
-    window.addEventListener("load",afficherLogin);
-    loginForm.addEventListener("submit",function(e){
-      e.preventDefault();
-      const user=document.getElementById("loginUser").value.trim(),pass=document.getElementById("loginPass").value;
-      const utilisateur=USERS.find(compte=>compte.login===user&&compte.password===pass);
-      if(utilisateur){loginError.style.display="none";sessionStorage.setItem("userName",utilisateur.name);sessionStorage.setItem("userLogin",utilisateur.login);ouvrirApp()}
-      else{loginError.style.display="block";document.getElementById("loginPass").select()}
+
+    /* =========================================================
+       4. AFFICHAGE DE LA FENÊTRE DE CONNEXION
+       ========================================================= */
+    function afficherLogin() {
+      // Masque l'application tant que l'utilisateur n'est pas connecté.
+      appContent.style.display = "none";
+
+      // Utilise dialog.showModal lorsque le navigateur le permet.
+      if (typeof loginDialog.showModal === "function") {
+        loginDialog.showModal();
+      } else {
+        // Solution de secours pour les anciens navigateurs.
+        loginDialog.setAttribute("open", "open");
+      }
+    }
+
+    // Affiche la connexion lorsque la page est complètement chargée.
+    window.addEventListener("load", afficherLogin);
+
+    /* =========================================================
+       5. VALIDATION DE LA CONNEXION
+       =========================================================
+       La méthode find() cherche un compte dont le login et le
+       mot de passe correspondent aux valeurs saisies.
+       ========================================================= */
+    loginForm.addEventListener("submit", function (event) {
+      // Empêche le rechargement de la page lors de l'envoi du formulaire.
+      event.preventDefault();
+
+      // Récupère les valeurs saisies.
+      const user = document.getElementById("loginUser").value.trim();
+      const pass = document.getElementById("loginPass").value;
+
+      // Recherche un utilisateur correspondant dans le tableau USERS.
+      const utilisateur = USERS.find(function (compte) {
+        return compte.login === user && compte.password === pass;
+      });
+
+      if (utilisateur) {
+        // Masque le message d'erreur si les informations sont correctes.
+        loginError.style.display = "none";
+
+        // Conserve temporairement les informations pendant la session.
+        sessionStorage.setItem("userName", utilisateur.name);
+        sessionStorage.setItem("userLogin", utilisateur.login);
+
+        // Ouvre l'application.
+        ouvrirApp();
+      } else {
+        // Affiche une erreur si le login ou le mot de passe est incorrect.
+        loginError.style.display = "block";
+        document.getElementById("loginPass").select();
+      }
     });
-    function setStatus(ok,text){const dot=document.getElementById("statusDot"),t=document.getElementById("statusText");dot.classList.remove("ok","bad");if(ok===true)dot.classList.add("ok");else if(ok===false)dot.classList.add("bad");t.textContent=text}
-    function setResStatus(ok,text){const dot=document.getElementById("resDot"),t=document.getElementById("resText");dot.classList.remove("ok","bad");if(ok===true)dot.classList.add("ok");else if(ok===false)dot.classList.add("bad");t.textContent=text}
-    function renderFormat(){const v=document.getElementById("formatSelect").value;document.getElementById("boxMinMax").classList.toggle("hide",v!=="minmax");document.getElementById("boxKeys").classList.toggle("hide",v!=="keys")}
-    function stats(values){const v=values.filter(Number.isFinite);if(!v.length)return{min:null,max:null};return{min:Math.min(...v),max:Math.max(...v)}}
-    function fmt(x){if(x===null||x===undefined||Number.isNaN(x))return"N/A";return(Math.round(x*1000)/1000).toString()}
-    function buildKeysText(es,ds,difs){return[`difhi ${fmt(difs.max)}`,`diflow ${fmt(difs.min)}`,`hid ${fmt(ds.max)}`,`lowd ${fmt(ds.min)}`,`hie ${fmt(es.max)}`,`lowe ${fmt(es.min)}`].join("\n")}
-    function quantile(sorted,q){const pos=(sorted.length-1)*q,base=Math.floor(pos),rest=pos-base;if(sorted[base+1]===undefined)return sorted[base];return sorted[base]+rest*(sorted[base+1]-sorted[base])}
-    function filterIQR(values,k=1.5){const v=values.filter(Number.isFinite).slice().sort((a,b)=>a-b);if(v.length<4)return values.filter(Number.isFinite);const q1=quantile(v,.25),q3=quantile(v,.75),iqr=q3-q1,lo=q1-k*iqr,hi=q3+k*iqr;return values.filter(x=>Number.isFinite(x)&&x>=lo&&x<=hi)}
-    async function copierKeys(){const el=document.getElementById("keysText"),txt=(el.value||"").trim();if(!txt)return;try{await navigator.clipboard.writeText(txt);setResStatus(true,"Keys copiés")}catch(e){const ta=document.createElement("textarea");ta.value=txt;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.left="-9999px";document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand("copy")}catch(_){}document.body.removeChild(ta);setResStatus(true,"Keys copiés (fallback)")}}
-    const NON_AUTORISES=/[^A-Za-z0-9 \t\r\n:._()|+\-,]/g;
-    function appliquerAllowlist(raw){return String(raw||"").replace(/\r\n?/g,"\n").replace(NON_AUTORISES,"")}
-    function extraireTousLesBlocs(raw){const t=appliquerAllowlist(raw),sp=`[ \t]*`,num2=`-?\\d+[.,]\\d{2}`,d34=`\\d{3,4}`,sd34=`-?\\d{3,4}`,SEP=`\\n(?:[ \t]*\\n)*`;function seg(label){return`\\(${sp}HI_${label}${sp}:${sp}[01]${sp}\\(${sp}MAX${sp}:${sp}${d34}${sp}\\)${sp}\\|${sp}LOW_${label}${sp}:${sp}[01]${sp}\\(${sp}MIN${sp}:${sp}${sd34}${sp}\\)${sp}\\|${sp}PASS_${label}${sp}:${sp}[01]${sp}\\)`}const lineE=`E${sp}:${sp}${num2}${sp}${seg("LEFT")}`,lineD=`D${sp}:${sp}${num2}${sp}${seg("RIGHT")}`,lineDif=`Dif${sp}E-D${sp}:${sp}${num2}${sp}${seg("DIFF")}`,reBloc=new RegExp(`${lineE}${SEP}${lineD}${SEP}${lineDif}`,"g");return[...t.matchAll(reBloc)].map(m=>m[0].trim()).join("\n\n")}
-    function extractValues(text,which){const map={E:/^\s*E\s*:\s*(-?\d+[.,]\d{2})/gm,D:/^\s*D\s*:\s*(-?\d+[.,]\d{2})/gm,DIF:/^\s*Dif\s*E-D\s*:\s*(-?\d+[.,]\d{2})/gm};return[...text.matchAll(map[which]||/$^/gm)].map(m=>parseFloat(m[1].replace(",",".")))}
-    function analyser(){const ta=document.getElementById("inputText"),raw=ta.value||"",cleanedBlocs=extraireTousLesBlocs(raw);if(raw.trim()&&cleanedBlocs!==appliquerAllowlist(raw).trim())ta.value=cleanedBlocs;const text=cleanedBlocs,eValuesRaw=extractValues(text,"E"),dValuesRaw=extractValues(text,"D"),diffValuesRaw=extractValues(text,"DIF"),eValues=filterIQR(eValuesRaw),dValues=filterIQR(dValuesRaw),diffValues=filterIQR(diffValuesRaw),passLeft=(text.match(/PASS_LEFT\s*:\s*1/g)||[]).length,failLeft=(text.match(/PASS_LEFT\s*:\s*0/g)||[]).length,passRight=(text.match(/PASS_RIGHT\s*:\s*1/g)||[]).length,failRight=(text.match(/PASS_RIGHT\s*:\s*0/g)||[]).length,passDiff=(text.match(/PASS_DIFF\s*:\s*1/g)||[]).length,failDiff=(text.match(/PASS_DIFF\s*:\s*0/g)||[]).length,es=stats(eValues),ds=stats(dValues),difs=stats(diffValues),nbBlocs=(text.match(/^\s*E\s*:/gm)||[]).length,totalFails=failLeft+failRight+failDiff;
-      document.getElementById("nbBlocs").textContent=String(nbBlocs);document.getElementById("etatGlobal").textContent=nbBlocs?(totalFails===0?"OK":"À vérifier"):"—";document.getElementById("estat").textContent=`${fmt(es.min)} / ${fmt(es.max)}`;document.getElementById("dstat").textContent=`${fmt(ds.min)} / ${fmt(ds.max)}`;document.getElementById("diffstat").textContent=`${fmt(difs.min)} / ${fmt(difs.max)}`;document.getElementById("keysText").value=buildKeysText(es,ds,difs);document.getElementById("pl").textContent=`✅ ${passLeft}`;document.getElementById("fl").textContent=`❌ ${failLeft}`;document.getElementById("pr").textContent=`✅ ${passRight}`;document.getElementById("fr").textContent=`❌ ${failRight}`;document.getElementById("pd").textContent=`✅ ${passDiff}`;document.getElementById("fd").textContent=`❌ ${failDiff}`;
-      const note=document.getElementById("nearNote"),removedE=Math.max(0,eValuesRaw.length-eValues.length),removedD=Math.max(0,dValuesRaw.length-dValues.length),removedF=Math.max(0,diffValuesRaw.length-diffValues.length);note.textContent=(eValuesRaw.length||dValuesRaw.length||diffValuesRaw.length)?`Filtre valeurs proches (IQR): outliers ignorés -> E:${removedE}, D:${removedD}, Dif:${removedF}`:"";if(!raw.trim()){setStatus(null,"En attente d’un texte");setResStatus(false,"Aucun texte collé")}else if(!text.trim()){setStatus(false,"Texte collé, mais aucun bloc E/D/Dif valide trouvé");setResStatus(false,"Aucune mesure valide")}else{setStatus(true,`Texte analysé (${nbBlocs} bloc(s))`);setResStatus(totalFails===0,"Tout est PASS"===totalFails?"Tout est PASS":`${totalFails} FAIL détecté(s)`)}}
-    function effacer(){document.getElementById("inputText").value="";analyser()}
-    function exemple(){document.getElementById("inputText").value=`E: 110.00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)\nD: 0.00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)\nDif E-D: 110.00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)\n\nE: 112.00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)\nD: 0.00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)\nDif E-D: 112.00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)\n\nE: 500.00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)\nD: 0.00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)\nDif E-D: 500.00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)\n\nE: 95,00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)\nD: 0,00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)\nDif E-D: 95,00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)`;analyser()}
+
+    /* =========================================================
+       6. GESTION DES INDICATEURS D'ÉTAT
+       ========================================================= */
+    function setStatus(ok, text) {
+      const dot = document.getElementById("statusDot");
+      const textElement = document.getElementById("statusText");
+
+      // Retire les anciens états.
+      dot.classList.remove("ok", "bad");
+
+      // Ajoute le nouvel état visuel.
+      if (ok === true) dot.classList.add("ok");
+      if (ok === false) dot.classList.add("bad");
+
+      textElement.textContent = text;
+    }
+
+    function setResStatus(ok, text) {
+      const dot = document.getElementById("resDot");
+      const textElement = document.getElementById("resText");
+
+      dot.classList.remove("ok", "bad");
+
+      if (ok === true) dot.classList.add("ok");
+      if (ok === false) dot.classList.add("bad");
+
+      textElement.textContent = text;
+    }
+
+    /* =========================================================
+       7. CHANGEMENT DU FORMAT DES RÉSULTATS
+       ========================================================= */
+    function renderFormat() {
+      const selectedFormat = document.getElementById("formatSelect").value;
+
+      // Affiche uniquement la zone correspondant au format sélectionné.
+      document.getElementById("boxMinMax").classList.toggle(
+        "hide",
+        selectedFormat !== "minmax"
+      );
+
+      document.getElementById("boxKeys").classList.toggle(
+        "hide",
+        selectedFormat !== "keys"
+      );
+    }
+
+    /* =========================================================
+       8. CALCUL DES STATISTIQUES
+       ========================================================= */
+    function stats(values) {
+      // Élimine les valeurs qui ne sont pas des nombres valides.
+      const validValues = values.filter(Number.isFinite);
+
+      if (!validValues.length) {
+        return { min: null, max: null };
+      }
+
+      return {
+        min: Math.min(...validValues),
+        max: Math.max(...validValues)
+      };
+    }
+
+    function fmt(value) {
+      // Affiche N/A lorsqu'aucune valeur valide n'est disponible.
+      if (value === null || value === undefined || Number.isNaN(value)) {
+        return "N/A";
+      }
+
+      // Arrondit la valeur à trois décimales maximum.
+      return (Math.round(value * 1000) / 1000).toString();
+    }
+
+    /* =========================================================
+       9. PRÉPARATION DU TEXTE DES KEYS
+       ========================================================= */
+    function buildKeysText(eStats, dStats, diffStats) {
+      return [
+        `difhi ${fmt(diffStats.max)}`,
+        `diflow ${fmt(diffStats.min)}`,
+        `hid ${fmt(dStats.max)}`,
+        `lowd ${fmt(dStats.min)}`,
+        `hie ${fmt(eStats.max)}`,
+        `lowe ${fmt(eStats.min)}`
+      ].join("\n");
+    }
+
+    /* =========================================================
+       10. FILTRE IQR DES VALEURS ABERRANTES
+       ========================================================= */
+    function quantile(sortedValues, q) {
+      const position = (sortedValues.length - 1) * q;
+      const base = Math.floor(position);
+      const rest = position - base;
+
+      if (sortedValues[base + 1] === undefined) {
+        return sortedValues[base];
+      }
+
+      return sortedValues[base] + rest * (
+        sortedValues[base + 1] - sortedValues[base]
+      );
+    }
+
+    function filterIQR(values, factor = 1.5) {
+      // Trie une copie des valeurs valides.
+      const sortedValues = values
+        .filter(Number.isFinite)
+        .slice()
+        .sort((a, b) => a - b);
+
+      // Avec moins de quatre valeurs, aucun filtrage n'est effectué.
+      if (sortedValues.length < 4) {
+        return values.filter(Number.isFinite);
+      }
+
+      const q1 = quantile(sortedValues, 0.25);
+      const q3 = quantile(sortedValues, 0.75);
+      const iqr = q3 - q1;
+      const lowerLimit = q1 - factor * iqr;
+      const upperLimit = q3 + factor * iqr;
+
+      return values.filter(function (value) {
+        return Number.isFinite(value) && value >= lowerLimit && value <= upperLimit;
+      });
+    }
+
+    /* =========================================================
+       11. COPIE DES KEYS
+       ========================================================= */
+    async function copierKeys() {
+      const keysElement = document.getElementById("keysText");
+      const text = (keysElement.value || "").trim();
+
+      if (!text) return;
+
+      try {
+        // Méthode moderne de copie dans le presse-papiers.
+        await navigator.clipboard.writeText(text);
+        setResStatus(true, "Keys copiés");
+      } catch (error) {
+        // Méthode de secours pour les navigateurs plus anciens.
+        const temporaryTextarea = document.createElement("textarea");
+        temporaryTextarea.value = text;
+        temporaryTextarea.setAttribute("readonly", "");
+        temporaryTextarea.style.position = "fixed";
+        temporaryTextarea.style.left = "-9999px";
+        temporaryTextarea.style.top = "0";
+
+        document.body.appendChild(temporaryTextarea);
+        temporaryTextarea.focus();
+        temporaryTextarea.select();
+
+        try {
+          document.execCommand("copy");
+        } catch (_) {
+          // La copie peut être refusée par certains navigateurs.
+        }
+
+        document.body.removeChild(temporaryTextarea);
+        setResStatus(true, "Keys copiés (fallback)");
+      }
+    }
+
+    /* =========================================================
+       12. NETTOYAGE DU TEXTE ENTRÉE
+       ========================================================= */
+    const NON_AUTORISES = /[^A-Za-z0-9 \t\r\n:._()|+\-,]/g;
+
+    function appliquerAllowlist(rawText) {
+      return String(rawText || "")
+        .replace(/\r\n?/g, "\n")
+        .replace(NON_AUTORISES, "");
+    }
+
+    /* =========================================================
+       13. EXTRACTION DES BLOCS VALIDES
+       =========================================================
+       Un bloc valide doit contenir exactement les lignes E, D et
+       Dif E-D avec leurs informations LEFT, RIGHT et DIFF.
+       ========================================================= */
+    function extraireTousLesBlocs(rawText) {
+      const text = appliquerAllowlist(rawText);
+      const spaces = `[ \\t]*`;
+      const decimalNumber = `-?\\d+[.,]\\d{2}`;
+      const positiveLimit = `\\d{3,4}`;
+      const signedLimit = `-?\\d{3,4}`;
+      const separator = `\\n(?:[ \\t]*\\n)*`;
+
+      function segment(label) {
+        return `\\(${spaces}HI_${label}${spaces}:${spaces}[01]${spaces}` +
+          `\\(${spaces}MAX${spaces}:${spaces}${positiveLimit}${spaces}\\)` +
+          `${spaces}\\|${spaces}LOW_${label}${spaces}:${spaces}[01]${spaces}` +
+          `\\(${spaces}MIN${spaces}:${spaces}${signedLimit}${spaces}\\)` +
+          `${spaces}\\|${spaces}PASS_${label}${spaces}:${spaces}[01]${spaces}\\)`;
+      }
+
+      const lineE = `E${spaces}:${spaces}${decimalNumber}${spaces}${segment("LEFT")}`;
+      const lineD = `D${spaces}:${spaces}${decimalNumber}${spaces}${segment("RIGHT")}`;
+      const lineDiff = `Dif${spaces}E-D${spaces}:${spaces}${decimalNumber}${spaces}${segment("DIFF")}`;
+      const blockRegex = new RegExp(
+        `${lineE}${separator}${lineD}${separator}${lineDiff}`,
+        "g"
+      );
+
+      return [...text.matchAll(blockRegex)]
+        .map(match => match[0].trim())
+        .join("\n\n");
+    }
+
+    /* =========================================================
+       14. EXTRACTION DES VALEURS E, D ET DIF
+       ========================================================= */
+    function extractValues(text, type) {
+      const patterns = {
+        E: /^\s*E\s*:\s*(-?\d+[.,]\d{2})/gm,
+        D: /^\s*D\s*:\s*(-?\d+[.,]\d{2})/gm,
+        DIF: /^\s*Dif\s*E-D\s*:\s*(-?\d+[.,]\d{2})/gm
+      };
+
+      return [...text.matchAll(patterns[type] || /$^/gm)]
+        .map(match => parseFloat(match[1].replace(",", ".")));
+    }
+
+    /* =========================================================
+       15. FONCTION PRINCIPALE D'ANALYSE
+       ========================================================= */
+    function analyser() {
+      const input = document.getElementById("inputText");
+      const rawText = input.value || "";
+      const cleanedBlocks = extraireTousLesBlocs(rawText);
+
+      // Remplace l'entrée par les blocs strictement valides.
+      if (rawText.trim() && cleanedBlocks !== appliquerAllowlist(rawText).trim()) {
+        input.value = cleanedBlocks;
+      }
+
+      const text = cleanedBlocks;
+      const eValuesRaw = extractValues(text, "E");
+      const dValuesRaw = extractValues(text, "D");
+      const diffValuesRaw = extractValues(text, "DIF");
+
+      // Applique le filtre des valeurs aberrantes.
+      const eValues = filterIQR(eValuesRaw, 1.5);
+      const dValues = filterIQR(dValuesRaw, 1.5);
+      const diffValues = filterIQR(diffValuesRaw, 1.5);
+
+      // Compte les PASS et FAIL de chaque catégorie.
+      const passLeft = (text.match(/PASS_LEFT\s*:\s*1/g) || []).length;
+      const failLeft = (text.match(/PASS_LEFT\s*:\s*0/g) || []).length;
+      const passRight = (text.match(/PASS_RIGHT\s*:\s*1/g) || []).length;
+      const failRight = (text.match(/PASS_RIGHT\s*:\s*0/g) || []).length;
+      const passDiff = (text.match(/PASS_DIFF\s*:\s*1/g) || []).length;
+      const failDiff = (text.match(/PASS_DIFF\s*:\s*0/g) || []).length;
+
+      // Calcule les statistiques min/max.
+      const eStats = stats(eValues);
+      const dStats = stats(dValues);
+      const diffStats = stats(diffValues);
+
+      // Compte le nombre de blocs complets.
+      const blockCount = (text.match(/^\s*E\s*:/gm) || []).length;
+      const totalFails = failLeft + failRight + failDiff;
+
+      // Met à jour les indicateurs principaux.
+      document.getElementById("nbBlocs").textContent = String(blockCount);
+      document.getElementById("etatGlobal").textContent = blockCount
+        ? (totalFails === 0 ? "OK" : "À vérifier")
+        : "—";
+
+      // Met à jour les résultats min/max.
+      document.getElementById("estat").textContent = `${fmt(eStats.min)} / ${fmt(eStats.max)}`;
+      document.getElementById("dstat").textContent = `${fmt(dStats.min)} / ${fmt(dStats.max)}`;
+      document.getElementById("diffstat").textContent = `${fmt(diffStats.min)} / ${fmt(diffStats.max)}`;
+
+      // Met à jour les keys copiables.
+      document.getElementById("keysText").value = buildKeysText(
+        eStats,
+        dStats,
+        diffStats
+      );
+
+      // Met à jour les compteurs PASS/FAIL.
+      document.getElementById("pl").textContent = `✅ ${passLeft}`;
+      document.getElementById("fl").textContent = `❌ ${failLeft}`;
+      document.getElementById("pr").textContent = `✅ ${passRight}`;
+      document.getElementById("fr").textContent = `❌ ${failRight}`;
+      document.getElementById("pd").textContent = `✅ ${passDiff}`;
+      document.getElementById("fd").textContent = `❌ ${failDiff}`;
+
+      // Informe combien de valeurs ont été retirées par le filtre IQR.
+      const removedE = Math.max(0, eValuesRaw.length - eValues.length);
+      const removedD = Math.max(0, dValuesRaw.length - dValues.length);
+      const removedDiff = Math.max(0, diffValuesRaw.length - diffValues.length);
+      const note = document.getElementById("nearNote");
+
+      note.textContent = (eValuesRaw.length || dValuesRaw.length || diffValuesRaw.length)
+        ? `Filtre valeurs proches (IQR) : outliers ignorés -> E:${removedE}, D:${removedD}, Dif:${removedDiff}`
+        : "";
+
+      // Met à jour les messages d'état.
+      if (!rawText.trim()) {
+        setStatus(null, "En attente d’un texte");
+        setResStatus(false, "Aucun texte collé");
+      } else if (!text.trim()) {
+        setStatus(false, "Texte collé, mais aucun bloc E/D/Dif valide trouvé");
+        setResStatus(false, "Aucune mesure valide");
+      } else {
+        setStatus(true, `Texte analysé (${blockCount} bloc(s))`);
+        setResStatus(
+          totalFails === 0,
+          totalFails === 0 ? "Tout est PASS" : `${totalFails} FAIL détecté(s)`
+        );
+      }
+    }
+
+    /* =========================================================
+       16. EFFACEMENT DE LA ZONE D'ENTRÉE
+       ========================================================= */
+    function effacer() {
+      document.getElementById("inputText").value = "";
+      analyser();
+    }
+
+    /* =========================================================
+       17. INSERTION D'UN EXEMPLE
+       ========================================================= */
+    function exemple() {
+      document.getElementById("inputText").value =
+`E: 110.00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)
+D: 0.00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)
+Dif E-D: 110.00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)
+
+E: 112.00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)
+D: 0.00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)
+Dif E-D: 112.00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)
+
+E: 500.00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)
+D: 0.00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)
+Dif E-D: 500.00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)
+
+E: 95,00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)
+D: 0,00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)
+Dif E-D: 95,00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)`;
+
+      analyser();
+    }
   </script>
 </body>
 </html>
