@@ -3,545 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="Soufiane BELARBI">
-  <meta name="developer" content="Soufiane BELARBI - Département Maintenance">
+  <meta name="author" content="Soufiane BELARBI" />
+  <meta name="developer" content="Soufiane BELARBI - Département Maintenance" />
   <title>Analyse Automatique des Mesures</title>
   <style>
     :root{
-      --primary:#0024d3;
-      --secondary:#fa0157;
-      --bg0:#0b1220;
-      --bg1:#0f1b33;
-      --card:rgba(255,255,255,.08);
-      --card2:rgba(255,255,255,.06);
-      --stroke:rgba(255,255,255,.14);
-      --text:#eaf0ff;
-      --muted:rgba(234,240,255,.72);
-      --shadow:0 12px 30px rgba(0,0,0,.35);
-      --radius:16px;
-      --ok:#22c55e;
-      --bad:#ef4444;
-      --warn:#f59e0b;
-      --mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      --primary:#0024d3; --secondary:#fa0157; --bg0:#0b1220; --bg1:#0f1b33;
+      --card:rgba(255,255,255,.08); --card2:rgba(255,255,255,.06);
+      --stroke:rgba(255,255,255,.14); --text:#eaf0ff; --muted:rgba(234,240,255,.72);
+      --shadow:0 12px 30px rgba(0,0,0,.35); --radius:16px;
+      --ok:#22c55e; --bad:#ef4444; --warn:#f59e0b;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans","Liberation Sans",sans-serif;
     }
-
-    *{ box-sizing:border-box; min-width:0; }
-
-    html{
-      -webkit-text-size-adjust:100%;
-      text-size-adjust:100%;
-    }
-
-    body{
-      margin:0;
-      font-family:var(--sans);
-      color:var(--text);
-      min-height:100vh;
-      background:
-        radial-gradient(1200px 700px at 15% 10%, rgba(0,36,211,.35), transparent 60%),
-        radial-gradient(1100px 700px at 85% 20%, rgba(250,1,87,.18), transparent 60%),
-        radial-gradient(900px 600px at 50% 95%, rgba(34,197,94,.10), transparent 55%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      padding:28px 18px;
-      overflow-x:hidden;
-    }
-
-    .wrap{ max-width:1100px; margin:0 auto; }
-
-    header{
-      display:flex;
-      gap:16px;
-      align-items:flex-start;
-      justify-content:space-between;
-      margin-bottom:18px;
-    }
-
-    @media (max-width:920px){
-      header{
-        flex-direction:column;
-        align-items:stretch;
-      }
-    }
-
-    .brand{
-      display:flex;
-      gap:14px;
-      align-items:flex-start;
-      flex:1 1 auto;
-      min-width:0;
-      width:100%;
-    }
-
-    .logo{
-      width:150px;
-      max-width:40vw;
-      height:auto;
-      display:block;
-      border-radius:10px;
-      background:rgba(255,255,255,.90);
-      padding:6px 10px;
-      border:1px solid rgba(255,255,255,.18);
-      box-shadow:0 10px 26px rgba(0,0,0,.25);
-      flex:0 0 auto;
-    }
-
-    .title{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      flex:1 1 auto;
-      min-width:0;
-      width:100%;
-    }
-
-    h1{
-      margin:0;
-      font-size:clamp(1.05rem, 0.92rem + 1vw, 1.375rem);
-      letter-spacing:.2px;
-      line-height:1.15;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-    }
-
-    .subtitle{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-    }
-
-    .chip{
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      padding:8px 12px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.06);
-      border-radius:999px;
-      box-shadow:0 8px 20px rgba(0,0,0,.18);
-      color:var(--muted);
-      font-size:12px;
-      user-select:none;
-      max-width:100%;
-      min-width:0;
-    }
-
-    .chip span:last-child{
-      min-width:0;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      white-space:normal;
-      line-height:1.35;
-    }
-
-    .head-right{
-      display:flex;
-      align-items:flex-end;
-      gap:12px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      flex:0 1 auto;
-      min-width:0;
-    }
-
-    @media (max-width:920px){
-      .head-right{
-        width:100%;
-        justify-content:flex-start;
-        align-items:flex-start;
-      }
-    }
-
-    .stack{
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-
-    .card{
-      border:1px solid var(--stroke);
-      background:linear-gradient(180deg, var(--card), var(--card2));
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      min-width:0;
-    }
-
-    .card-head{
-      padding:14px 16px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      flex-wrap:wrap;
-      min-width:0;
-    }
-
-    .card-title{
-      margin:0;
-      font-size:14px;
-      color:rgba(234,240,255,.92);
-      letter-spacing:.2px;
-    }
-
-    .card-body{ padding:14px 16px 16px; min-width:0; }
-
-    textarea{
-      width:100%;
-      min-height:320px;
-      resize:vertical;
-      padding:14px;
-      font-family:var(--mono);
-      font-size:12.5px;
-      line-height:1.45;
-      color:rgba(234,240,255,.92);
-      background:rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:14px;
-      outline:none;
-    }
-
-    textarea:focus{
-      border-color:rgba(0,36,211,.70);
-      box-shadow:0 0 0 4px rgba(0,36,211,.18);
-    }
-
-    .outtext{
-      width:100%;
-      min-height:160px;
-      resize:vertical;
-      padding:12px;
-      font-family:var(--mono);
-      font-size:13px;
-      line-height:1.45;
-      color:rgba(234,240,255,.92);
-      background:rgba(0,0,0,.22);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:14px;
-      outline:none;
-      white-space:pre;
-    }
-
-    .actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:12px;
-    }
-
-    button{
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      padding:10px 14px;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:600;
-      font-size:13px;
-      transition:transform .08s ease, background .2s ease, border-color .2s ease;
-      user-select:none;
-      min-height:44px;
-    }
-
-    button:hover{
-      background:rgba(255,255,255,.10);
-      border-color:rgba(255,255,255,.22);
-    }
-
-    button:active{ transform:translateY(1px); }
-
-    .primary{
-      border-color:rgba(0,36,211,.55);
-      background:linear-gradient(135deg, rgba(0,36,211,.95), rgba(250,1,87,.82));
-      box-shadow:0 12px 30px rgba(0,36,211,.22);
-    }
-
-    .ghost{ background:transparent; }
-
-    .small-note{ margin:10px 0 0; color:var(--muted); font-size:12px; }
-
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:999px;
-      background:var(--warn);
-      box-shadow:0 0 0 3px rgba(245,158,11,.16);
-      flex:0 0 auto;
-    }
-
-    .dot.ok{ background:var(--ok); box-shadow:0 0 0 3px rgba(34,197,94,.16); }
-    .dot.bad{ background:var(--bad); box-shadow:0 0 0 3px rgba(239,68,68,.16); }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      color:var(--muted);
-      max-width:100%;
-      min-width:0;
-      white-space:normal;
-    }
-
-    .badge span:last-child{
-      overflow-wrap:anywhere;
-      word-break:break-word;
-    }
-
-    select{
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.20);
-      color:rgba(234,240,255,.92);
-      padding:8px 10px;
-      border-radius:12px;
-      outline:none;
-      font-size:13px;
-      min-height:44px;
-      max-width:100%;
-    }
-
-    select:focus{
-      border-color:rgba(250,1,87,.55);
-      box-shadow:0 0 0 4px rgba(250,1,87,.16);
-    }
-
-    .hide{ display:none; }
-
-    .kpis{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-
-    @media (max-width:520px){
-      .kpis{ grid-template-columns:1fr; }
-    }
-
-    .kpi{
-      padding:12px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.18);
-      min-width:0;
-    }
-
-    .kpi .label{ color:var(--muted); font-size:12px; margin-bottom:6px; }
-    .kpi .value{ font-size:18px; font-weight:800; letter-spacing:.2px; overflow-wrap:anywhere; }
-
-    .section{
-      margin-top:12px;
-      padding-top:12px;
-      border-top:1px solid rgba(255,255,255,.10);
-      min-width:0;
-    }
-
-    .row{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      padding:8px 0;
-      border-bottom:1px dashed rgba(255,255,255,.12);
-      min-width:0;
-    }
-
-    .row:last-child{ border-bottom:none; }
-    .row .name{ color:rgba(234,240,255,.90); font-size:13px; }
-    .row .val{ color:var(--muted); font-family:var(--mono); font-size:12.5px; text-align:right; overflow-wrap:anywhere; }
-
-    .passes{
-      display:grid;
-      gap:10px;
-      grid-template-columns:1fr;
-    }
-
-    .passcard{
-      padding:12px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.18);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      min-width:0;
-    }
-
-    .passcard .side{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width:0;
-    }
-
-    .passcard .title2{ font-size:13px; color:rgba(234,240,255,.92); }
-    .muted{ color:var(--muted); font-size:12px; }
-
-    .counts{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      align-items:center;
-      font-family:var(--mono);
-      font-size:12.5px;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:7px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      color:rgba(234,240,255,.88);
-      font-size:13.5px;
-      white-space:nowrap;
-    }
-
-    .pill.ok{ border-color:rgba(34,197,94,.35); }
-    .pill.bad{ border-color:rgba(239,68,68,.35); }
-
-    .footer-note{ margin-top:12px; color:rgba(234,240,255,.55); font-size:11.5px; overflow-wrap:anywhere; }
-
-    #appContent{ display:none; }
-
-    .login-dialog{
-      border:none;
-      padding:0;
-      background:transparent;
-      max-width:none;
-    }
-
-    .login-dialog::backdrop{
-      background:rgba(0,0,0,.72);
-      backdrop-filter:blur(6px);
-    }
-
-    .login-box{
-      width:min(92vw, 390px);
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      padding:22px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.14);
-      background:linear-gradient(180deg, rgba(15,27,51,.96), rgba(11,18,32,.98));
-      color:#eaf0ff;
-      box-shadow:0 20px 50px rgba(0,0,0,.45);
-    }
-
-    .login-box h2{
-      margin:0 0 6px;
-      font-size:1.2rem;
-      line-height:1.2;
-    }
-
-    .login-box p{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.45;
-    }
-
-    .login-box label{
-      font-size:13px;
-      color:rgba(234,240,255,.82);
-      margin-top:2px;
-    }
-
-    .login-box input{
-      width:100%;
-      padding:12px 14px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.22);
-      color:#eaf0ff;
-      outline:none;
-    }
-
-    .login-box input:focus{
-      border-color:rgba(0,36,211,.70);
-      box-shadow:0 0 0 4px rgba(0,36,211,.18);
-    }
-
-    .login-actions{
-      display:flex;
-      gap:10px;
-      margin-top:8px;
-      flex-wrap:wrap;
-    }
-
-    .login-actions button{
-      flex:1 1 100%;
-    }
-
-    .login-error{
-      display:none;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid rgba(239,68,68,.28);
-      background:rgba(239,68,68,.12);
-      color:#ffd7dc;
-      font-size:12.5px;
-      line-height:1.4;
-    }
-
-    @media (max-width:640px){
-      body{ padding:16px 12px; }
-
-      .brand{
-        align-items:flex-start;
-        gap:10px;
-      }
-
-      .logo{
-        width:96px;
-        max-width:96px;
-        padding:4px 6px;
-      }
-
-      h1{
-        font-size:clamp(0.95rem, 0.85rem + 1.1vw, 1.1rem);
-      }
-
-      .chip{
-        width:100%;
-        border-radius:14px;
-        align-items:flex-start;
-      }
-
-      .head-right .chip{
-        width:100%;
-      }
-
-      .card-head,
-      .row,
-      .passcard{
-        flex-direction:column;
-        align-items:flex-start;
-      }
-
-      .row .val{
-        text-align:left;
-      }
-
-      .counts{
-        justify-content:flex-start;
-      }
-
-      .actions button,
-      .card-head button,
-      .card-head select{
-        width:100%;
-      }
-    }
+    *{box-sizing:border-box;min-width:0}
+    html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    body{margin:0;font-family:var(--sans);color:var(--text);min-height:100vh;background:radial-gradient(1200px 700px at 15% 10%,rgba(0,36,211,.35),transparent 60%),radial-gradient(1100px 700px at 85% 20%,rgba(250,1,87,.18),transparent 60%),radial-gradient(900px 600px at 50% 95%,rgba(34,197,94,.10),transparent 55%),linear-gradient(180deg,var(--bg0),var(--bg1));padding:28px 18px;overflow-x:hidden}
+    .wrap{max-width:1100px;margin:0 auto}
+    header{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:14px;align-items:flex-start;flex:1 1 auto;width:100%}
+    .logo{width:150px;max-width:40vw;height:auto;display:block;border-radius:10px;background:rgba(255,255,255,.9);padding:6px 10px;border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 26px rgba(0,0,0,.25);flex:0 0 auto}
+    .title{display:flex;flex-direction:column;gap:8px;flex:1 1 auto;width:100%}
+    h1{margin:0;font-size:clamp(1.05rem,.92rem + 1vw,1.375rem);letter-spacing:.2px;line-height:1.15;overflow-wrap:anywhere}
+    .subtitle{margin:0;color:var(--muted);font-size:13px;line-height:1.35}
+    .chip{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--stroke);background:rgba(255,255,255,.06);border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,.18);color:var(--muted);font-size:12px;user-select:none;max-width:100%}
+    .chip span:last-child,.badge span:last-child{min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}
+    .head-right{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;justify-content:flex-end;flex:0 1 auto}
+    .stack{display:flex;flex-direction:column;gap:14px}
+    .card{border:1px solid var(--stroke);background:linear-gradient(180deg,var(--card),var(--card2));border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .card-head{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.1);flex-wrap:wrap}
+    .card-title{margin:0;font-size:14px;color:rgba(234,240,255,.92);letter-spacing:.2px}
+    .card-body{padding:14px 16px 16px}
+    textarea{width:100%;min-height:320px;resize:vertical;padding:14px;font-family:var(--mono);font-size:12.5px;line-height:1.45;color:rgba(234,240,255,.92);background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.14);border-radius:14px;outline:none}
+    textarea:focus,input:focus{border-color:rgba(0,36,211,.7);box-shadow:0 0 0 4px rgba(0,36,211,.18)}
+    .outtext{min-height:160px;padding:12px;font-size:13px;white-space:pre}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    button{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;font-size:13px;transition:transform .08s ease,background .2s ease,border-color .2s ease;user-select:none;min-height:44px}
+    button:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22)}
+    button:active{transform:translateY(1px)}
+    .primary{border-color:rgba(0,36,211,.55);background:linear-gradient(135deg,rgba(0,36,211,.95),rgba(250,1,87,.82));box-shadow:0 12px 30px rgba(0,36,211,.22)}
+    .ghost{background:transparent}.small-note{margin:10px 0 0;color:var(--muted);font-size:12px}
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--warn);box-shadow:0 0 0 3px rgba(245,158,11,.16);flex:0 0 auto}.dot.ok{background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.16)}.dot.bad{background:var(--bad);box-shadow:0 0 0 3px rgba(239,68,68,.16)}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--muted);max-width:100%}
+    select{border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.2);color:rgba(234,240,255,.92);padding:8px 10px;border-radius:12px;outline:none;font-size:13px;min-height:44px;max-width:100%}
+    .hide{display:none}.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}.kpi{padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18)}.kpi .label{color:var(--muted);font-size:12px;margin-bottom:6px}.kpi .value{font-size:18px;font-weight:800;letter-spacing:.2px;overflow-wrap:anywhere}
+    .section{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1)}.row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.12)}.row:last-child{border-bottom:none}.row .name{color:rgba(234,240,255,.9);font-size:13px}.row .val{color:var(--muted);font-family:var(--mono);font-size:12.5px;text-align:right;overflow-wrap:anywhere}
+    .passes{display:grid;gap:10px;grid-template-columns:1fr}.passcard{padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);display:flex;align-items:center;justify-content:space-between;gap:12px}.passcard .side{display:flex;flex-direction:column;gap:4px}.passcard .title2{font-size:13px;color:rgba(234,240,255,.92)}.muted{color:var(--muted);font-size:12px}.counts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center;font-family:var(--mono);font-size:12.5px}.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:rgba(234,240,255,.88);font-size:13.5px;white-space:nowrap}.pill.ok{border-color:rgba(34,197,94,.35)}.pill.bad{border-color:rgba(239,68,68,.35)}.footer-note{margin-top:12px;color:rgba(234,240,255,.55);font-size:11.5px;overflow-wrap:anywhere}
+    #appContent{display:none}.login-dialog{border:none;padding:0;background:transparent;max-width:none}.login-dialog::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(6px)}.login-box{width:min(92vw,390px);display:flex;flex-direction:column;gap:12px;padding:22px;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(15,27,51,.96),rgba(11,18,32,.98));color:#eaf0ff;box-shadow:0 20px 50px rgba(0,0,0,.45)}.login-box h2{margin:0 0 6px;font-size:1.2rem;line-height:1.2}.login-box p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}.login-box label{font-size:13px;color:rgba(234,240,255,.82);margin-top:2px}.login-box input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.22);color:#eaf0ff;outline:none}.login-actions{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}.login-actions button{flex:1 1 100%}.login-error{display:none;padding:10px 12px;border-radius:12px;border:1px solid rgba(239,68,68,.28);background:rgba(239,68,68,.12);color:#ffd7dc;font-size:12.5px;line-height:1.4}
+    @media(max-width:920px){header{flex-direction:column;align-items:stretch}.head-right{width:100%;justify-content:flex-start;align-items:flex-start}}
+    @media(max-width:640px){body{padding:16px 12px}.brand{gap:10px}.logo{width:96px;max-width:96px;padding:4px 6px}h1{font-size:clamp(.95rem,.85rem + 1.1vw,1.1rem)}.chip{width:100%;border-radius:14px;align-items:flex-start}.card-head,.row,.passcard{flex-direction:column;align-items:flex-start}.row .val{text-align:left}.counts{justify-content:flex-start}.actions button,.card-head button,.card-head select{width:100%}}
+    @media(max-width:520px){.kpis{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -549,18 +60,12 @@
     <form id="loginForm" class="login-box">
       <h2 id="loginTitle">Connexion requise</h2>
       <p>Veuillez saisir votre login et votre mot de passe pour accéder à l'application.</p>
-
       <label for="loginUser">Login</label>
-      <input id="loginUser" type="text" autocomplete="username" required autofocus>
-
+      <input id="loginUser" type="text" autocomplete="username" required autofocus />
       <label for="loginPass">Mot de passe</label>
-      <input id="loginPass" type="password" autocomplete="current-password" required>
-
+      <input id="loginPass" type="password" autocomplete="current-password" required />
       <div id="loginError" class="login-error">Identifiant ou mot de passe incorrect.</div>
-
-      <div class="login-actions">
-        <button type="submit" class="primary">Ouvrir l'application</button>
-      </div>
+      <div class="login-actions"><button type="submit" class="primary">Ouvrir l'application</button></div>
     </form>
   </dialog>
 
@@ -571,39 +76,19 @@
           <img class="logo" src="logo-forvia-1-1.jpg" alt="FORVIA logo" />
           <div class="title">
             <h1>Analyse Automatique des Mesures</h1>
-
-            <div class="chip" aria-label="Signature développeur">
-              <span class="dot ok"></span>
-              <span>Développeur : Soufiane BELARBI | Département : Maintenance | Année : 2026</span>
-            </div>
-
-            <p class="subtitle"></p>
+            <div class="chip" aria-label="Signature développeur"><span class="dot ok"></span><span>Développeur : Soufiane BELARBI | Département : Maintenance | Année : 2026</span></div>
+            <p class="subtitle" id="userWelcome"></p>
           </div>
         </div>
-
-        <div class="head-right">
-          <div class="chip">
-            <span class="dot" id="statusDot"></span>
-            <span id="statusText">En attente d’un texte</span>
-          </div>
-        </div>
+        <div class="head-right"><div class="chip"><span class="dot" id="statusDot"></span><span id="statusText">En attente d’un texte</span></div></div>
       </header>
 
       <div class="stack">
         <section class="card">
-          <div class="card-head">
-            <h2 class="card-title">Entrée</h2>
-            <span class="badge"><span class="dot"></span><span>Support: E/D/Dif + PASS_* (format strict)</span></span>
-          </div>
+          <div class="card-head"><h2 class="card-title">Entrée</h2><span class="badge"><span class="dot"></span><span>Support: E/D/Dif + PASS_* (format strict)</span></span></div>
           <div class="card-body">
             <textarea id="inputText" placeholder="Colle ici ton bloc de texte..."></textarea>
-
-            <div class="actions">
-              <button class="primary" onclick="analyser()">Analyser</button>
-              <button class="ghost" onclick="effacer()">Effacer</button>
-              <button onclick="exemple()">Coller un exemple</button>
-            </div>
-
+            <div class="actions"><button class="primary" onclick="analyser()">Analyser</button><button class="ghost" onclick="effacer()">Effacer</button><button onclick="exemple()">Coller un exemple</button></div>
             <p class="small-note">Mode strict: seules les lignes E/D/Dif sont analysées, le reste est ignoré.</p>
           </div>
         </section>
@@ -611,89 +96,21 @@
         <section class="card">
           <div class="card-head">
             <h2 class="card-title">Résultats</h2>
-
-            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; min-width:0; width:100%; max-width:100%;">
-              <select id="formatSelect" onchange="renderFormat()">
-                <option value="keys" selected>Keys (copiable)</option>
-                <option value="minmax">Min / Max (valeurs proches)</option>
-              </select>
-
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;min-width:0;width:100%;max-width:100%;">
+              <select id="formatSelect" onchange="renderFormat"><option value="keys" selected>Keys (copiable)</option><option value="minmax">Min / Max (valeurs proches)</option></select>
               <button class="ghost" onclick="copierKeys()">Copier keys</button>
-
               <span class="badge"><span class="dot" id="resDot"></span><span id="resText">Aucun résultat</span></span>
             </div>
           </div>
-
           <div class="card-body">
-            <div class="kpis">
-              <div class="kpi">
-                <div class="label">Nombre de blocs</div>
-                <div class="value" id="nbBlocs">0</div>
-              </div>
-              <div class="kpi">
-                <div class="label">État global</div>
-                <div class="value" id="etatGlobal">—</div>
-              </div>
-            </div>
-
-            <div id="boxMinMax" class="section hide">
-              <div class="row">
-                <div class="name">E (min / max)</div>
-                <div class="val" id="estat">N/A</div>
-              </div>
-              <div class="row">
-                <div class="name">D (min / max)</div>
-                <div class="val" id="dstat">N/A</div>
-              </div>
-              <div class="row">
-                <div class="name">Dif E-D (min / max)</div>
-                <div class="val" id="diffstat">N/A</div>
-              </div>
-              <div class="footer-note" id="nearNote"></div>
-            </div>
-
-            <div id="boxKeys" class="section">
-              <textarea id="keysText" class="outtext" readonly spellcheck="false"></textarea>
-              <div class="footer-note">Texte prêt à copier/coller.</div>
-            </div>
-
-            <div class="section">
-              <div class="passes">
-                <div class="passcard">
-                  <div class="side">
-                    <div class="title2">PASS LEFT</div>
-                    <div class="muted">Comptage ✅ / ❌</div>
-                  </div>
-                  <div class="counts">
-                    <span class="pill ok" id="pl">✅ 0</span>
-                    <span class="pill bad" id="fl">❌ 0</span>
-                  </div>
-                </div>
-
-                <div class="passcard">
-                  <div class="side">
-                    <div class="title2">PASS RIGHT</div>
-                    <div class="muted">Comptage ✅ / ❌</div>
-                  </div>
-                  <div class="counts">
-                    <span class="pill ok" id="pr">✅ 0</span>
-                    <span class="pill bad" id="fr">❌ 0</span>
-                  </div>
-                </div>
-
-                <div class="passcard">
-                  <div class="side">
-                    <div class="title2">PASS DIFF</div>
-                    <div class="muted">Comptage ✅ / ❌</div>
-                  </div>
-                  <div class="counts">
-                    <span class="pill ok" id="pd">✅ 0</span>
-                    <span class="pill bad" id="fd">❌ 0</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+            <div class="kpis"><div class="kpi"><div class="label">Nombre de blocs</div><div class="value" id="nbBlocs">0</div></div><div class="kpi"><div class="label">État global</div><div class="value" id="etatGlobal">—</div></div></div>
+            <div id="boxMinMax" class="section hide"><div class="row"><div class="name">E (min / max)</div><div class="val" id="estat">N/A</div></div><div class="row"><div class="name">D (min / max)</div><div class="val" id="dstat">N/A</div></div><div class="row"><div class="name">Dif E-D (min / max)</div><div class="val" id="diffstat">N/A</div></div><div class="footer-note" id="nearNote"></div></div>
+            <div id="boxKeys" class="section"><textarea id="keysText" class="outtext" readonly spellcheck="false"></textarea><div class="footer-note">Texte prêt à copier/coller.</div></div>
+            <div class="section"><div class="passes">
+              <div class="passcard"><div class="side"><div class="title2">PASS LEFT</div><div class="muted">Comptage ✅ / ❌</div></div><div class="counts"><span class="pill ok" id="pl">✅ 0</span><span class="pill bad" id="fl">❌ 0</span></div></div>
+              <div class="passcard"><div class="side"><div class="title2">PASS RIGHT</div><div class="muted">Comptage ✅ / ❌</div></div><div class="counts"><span class="pill ok" id="pr">✅ 0</span><span class="pill bad" id="fr">❌ 0</span></div></div>
+              <div class="passcard"><div class="side"><div class="title2">PASS DIFF</div><div class="muted">Comptage ✅ / ❌</div></div><div class="counts"><span class="pill ok" id="pd">✅ 0</span><span class="pill bad" id="fd">❌ 0</span></div></div>
+            </div></div>
           </div>
         </section>
       </div>
@@ -701,266 +118,51 @@
   </div>
 
   <script>
-    const VALID_USER = "1";
-    const VALID_PASS = "wlcoxbksn";
+    // Ajoutez ou modifiez les comptes dans cette liste.
+    const USERS = [
+      { login: "1", password: "wlcoxbksn", name: "Administrateur" },
+      { login: "maintenance", password: "maint2026", name: "Maintenance" },
+      { login: "production", password: "prod2026", name: "Production" },
+      { login: "qualite", password: "qualite2026", name: "Qualité" }
+    ];
 
-    const loginDialog = document.getElementById("loginDialog");
-    const loginForm = document.getElementById("loginForm");
-    const loginError = document.getElementById("loginError");
-    const appContent = document.getElementById("appContent");
+    const loginDialog=document.getElementById("loginDialog"),loginForm=document.getElementById("loginForm"),loginError=document.getElementById("loginError"),appContent=document.getElementById("appContent");
 
     function ouvrirApp(){
-      appContent.style.display = "block";
-      if (loginDialog.open) loginDialog.close();
-      renderFormat();
-      analyser();
-      const input = document.getElementById("inputText");
-      if (input) input.focus();
+      appContent.style.display="block";
+      if(loginDialog.open)loginDialog.close();
+      const userName=sessionStorage.getItem("userName");
+      const welcome=document.getElementById("userWelcome");
+      if(welcome&&userName)welcome.textContent=`Utilisateur connecté : ${userName}`;
+      renderFormat(); analyser(); document.getElementById("inputText").focus();
     }
-
-    function afficherLogin(){
-      appContent.style.display = "none";
-      if (typeof loginDialog.showModal === "function") {
-        loginDialog.showModal();
-      } else {
-        loginDialog.setAttribute("open", "open");
-      }
-    }
-
-    window.addEventListener("load", () => {
-      afficherLogin();
-    });
-
-    loginForm.addEventListener("submit", function(e){
+    function afficherLogin(){appContent.style.display="none";if(typeof loginDialog.showModal==="function")loginDialog.showModal();else loginDialog.setAttribute("open","open")}
+    window.addEventListener("load",afficherLogin);
+    loginForm.addEventListener("submit",function(e){
       e.preventDefault();
-      const user = document.getElementById("loginUser").value.trim();
-      const pass = document.getElementById("loginPass").value;
-
-      if (user === VALID_USER && pass === VALID_PASS) {
-        loginError.style.display = "none";
-        ouvrirApp();
-      } else {
-        loginError.style.display = "block";
-        document.getElementById("loginPass").select();
-      }
+      const user=document.getElementById("loginUser").value.trim(),pass=document.getElementById("loginPass").value;
+      const utilisateur=USERS.find(compte=>compte.login===user&&compte.password===pass);
+      if(utilisateur){loginError.style.display="none";sessionStorage.setItem("userName",utilisateur.name);sessionStorage.setItem("userLogin",utilisateur.login);ouvrirApp()}
+      else{loginError.style.display="block";document.getElementById("loginPass").select()}
     });
-
-    function setStatus(ok, text){
-      const dot = document.getElementById("statusDot");
-      const t = document.getElementById("statusText");
-      dot.classList.remove("ok","bad");
-      if(ok === true) dot.classList.add("ok");
-      else if(ok === false) dot.classList.add("bad");
-      t.textContent = text;
-    }
-
-    function setResStatus(ok, text){
-      const dot = document.getElementById("resDot");
-      const t = document.getElementById("resText");
-      dot.classList.remove("ok","bad");
-      if(ok === true) dot.classList.add("ok");
-      else if(ok === false) dot.classList.add("bad");
-      t.textContent = text;
-    }
-
-    function renderFormat(){
-      const v = document.getElementById("formatSelect").value;
-      document.getElementById("boxMinMax").classList.toggle("hide", v !== "minmax");
-      document.getElementById("boxKeys").classList.toggle("hide", v !== "keys");
-    }
-
-    function stats(values) {
-      const v = values.filter(Number.isFinite);
-      if (!v.length) return { min: null, max: null };
-      return { min: Math.min(...v), max: Math.max(...v) };
-    }
-
-    function fmt(x){
-      if (x === null || x === undefined || Number.isNaN(x)) return "N/A";
-      return (Math.round(x * 1000) / 1000).toString();
-    }
-
-    function buildKeysText(es, ds, difs){
-      return [
-        `difhi ${fmt(difs.max)}`,
-        `diflow ${fmt(difs.min)}`,
-        `hid ${fmt(ds.max)}`,
-        `lowd ${fmt(ds.min)}`,
-        `hie ${fmt(es.max)}`,
-        `lowe ${fmt(es.min)}`
-      ].join("\n");
-    }
-
-    function quantile(sorted, q){
-      const pos = (sorted.length - 1) * q;
-      const base = Math.floor(pos);
-      const rest = pos - base;
-      if (sorted[base + 1] === undefined) return sorted[base];
-      return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
-    }
-
-    function filterIQR(values, k = 1.5){
-      const v = values.filter(Number.isFinite).slice().sort((a,b)=>a-b);
-      if (v.length < 4) return values.filter(Number.isFinite);
-      const q1 = quantile(v, 0.25);
-      const q3 = quantile(v, 0.75);
-      const iqr = q3 - q1;
-      const lo = q1 - k * iqr;
-      const hi = q3 + k * iqr;
-      return values.filter(x => Number.isFinite(x) && x >= lo && x <= hi);
-    }
-
-    async function copierKeys(){
-      const el = document.getElementById("keysText");
-      const txt = (el.value || "").trim();
-      if (!txt) return;
-
-      try{
-        await navigator.clipboard.writeText(txt);
-        setResStatus(true, "Keys copiés");
-      }catch(e){
-        const ta = document.createElement("textarea");
-        ta.value = txt;
-        ta.setAttribute("readonly", "");
-        ta.style.position = "fixed";
-        ta.style.left = "-9999px";
-        ta.style.top = "0";
-        document.body.appendChild(ta);
-        ta.focus();
-        ta.select();
-        try{ document.execCommand("copy"); } catch(_) {}
-        document.body.removeChild(ta);
-        setResStatus(true, "Keys copiés (fallback)");
-      }
-    }
-
-    const NON_AUTORISES = /[^A-Za-z0-9 \t\r\n:._()|+\-,]/g;
-
-    function appliquerAllowlist(raw){
-      return String(raw || "")
-        .replace(/\r\n?/g, "\n")
-        .replace(NON_AUTORISES, "");
-    }
-
-    function extraireTousLesBlocs(raw){
-      const t = appliquerAllowlist(raw);
-      const sp = `[ \t]*`;
-      const num2 = `-?\\d+[.,]\\d{2}`;
-      const d34 = `\\d{3,4}`;
-      const sd34 = `-?\\d{3,4}`;
-      const SEP = `\\n(?:[ \t]*\\n)*`;
-
-      function seg(label){
-        return `\\(${sp}HI_${label}${sp}:${sp}[01]${sp}\\(${sp}MAX${sp}:${sp}${d34}${sp}\\)${sp}\\|${sp}LOW_${label}${sp}:${sp}[01]${sp}\\(${sp}MIN${sp}:${sp}${sd34}${sp}\\)${sp}\\|${sp}PASS_${label}${sp}:${sp}[01]${sp}\\)`;
-      }
-
-      const lineE = `E${sp}:${sp}${num2}${sp}${seg("LEFT")}`;
-      const lineD = `D${sp}:${sp}${num2}${sp}${seg("RIGHT")}`;
-      const lineDif = `Dif${sp}E-D${sp}:${sp}${num2}${sp}${seg("DIFF")}`;
-      const reBloc = new RegExp(`${lineE}${SEP}${lineD}${SEP}${lineDif}`, "g");
-      return [...t.matchAll(reBloc)].map(m => m[0].trim()).join("\n\n");
-    }
-
-    function extractValues(text, which){
-      const map = {
-        E: /^\s*E\s*:\s*(-?\d+[.,]\d{2})/gm,
-        D: /^\s*D\s*:\s*(-?\d+[.,]\d{2})/gm,
-        DIF: /^\s*Dif\s*E-D\s*:\s*(-?\d+[.,]\d{2})/gm
-      };
-      return [...text.matchAll(map[which] || /$^/gm)].map(m => parseFloat(m[1].replace(',', '.')));
-    }
-
-    function analyser() {
-      const ta = document.getElementById("inputText");
-      const raw = ta.value || "";
-      const cleanedBlocs = extraireTousLesBlocs(raw);
-
-      if (raw.trim() && cleanedBlocs !== appliquerAllowlist(raw).trim()) {
-        ta.value = cleanedBlocs;
-      }
-
-      const text = cleanedBlocs;
-      const eValuesRaw = extractValues(text, "E");
-      const dValuesRaw = extractValues(text, "D");
-      const diffValuesRaw = extractValues(text, "DIF");
-
-      const eValues = filterIQR(eValuesRaw, 1.5);
-      const dValues = filterIQR(dValuesRaw, 1.5);
-      const diffValues = filterIQR(diffValuesRaw, 1.5);
-
-      const passLeft = (text.match(/PASS_LEFT\s*:\s*1/g) || []).length;
-      const failLeft = (text.match(/PASS_LEFT\s*:\s*0/g) || []).length;
-      const passRight = (text.match(/PASS_RIGHT\s*:\s*1/g) || []).length;
-      const failRight = (text.match(/PASS_RIGHT\s*:\s*0/g) || []).length;
-      const passDiff = (text.match(/PASS_DIFF\s*:\s*1/g) || []).length;
-      const failDiff = (text.match(/PASS_DIFF\s*:\s*0/g) || []).length;
-
-      const es = stats(eValues);
-      const ds = stats(dValues);
-      const difs = stats(diffValues);
-
-      const nbBlocs = (text.match(/^\s*E\s*:/gm) || []).length;
-      document.getElementById("nbBlocs").textContent = String(nbBlocs);
-
-      const totalFails = failLeft + failRight + failDiff;
-      document.getElementById("etatGlobal").textContent = nbBlocs ? (totalFails === 0 ? "OK" : "À vérifier") : "—";
-
-      document.getElementById("estat").textContent = `${fmt(es.min)} / ${fmt(es.max)}`;
-      document.getElementById("dstat").textContent = `${fmt(ds.min)} / ${fmt(ds.max)}`;
-      document.getElementById("diffstat").textContent = `${fmt(difs.min)} / ${fmt(difs.max)}`;
-      document.getElementById("keysText").value = buildKeysText(es, ds, difs);
-
-      document.getElementById("pl").textContent = `✅ ${passLeft}`;
-      document.getElementById("fl").textContent = `❌ ${failLeft}`;
-      document.getElementById("pr").textContent = `✅ ${passRight}`;
-      document.getElementById("fr").textContent = `❌ ${failRight}`;
-      document.getElementById("pd").textContent = `✅ ${passDiff}`;
-      document.getElementById("fd").textContent = `❌ ${failDiff}`;
-
-      const removedE = Math.max(0, eValuesRaw.length - eValues.length);
-      const removedD = Math.max(0, dValuesRaw.length - dValues.length);
-      const removedF = Math.max(0, diffValuesRaw.length - diffValues.length);
-      const note = document.getElementById("nearNote");
-      note.textContent = (eValuesRaw.length || dValuesRaw.length || diffValuesRaw.length)
-        ? `Filtre valeurs proches (IQR): outliers ignorés -> E:${removedE}, D:${removedD}, Dif:${removedF}`
-        : "";
-
-      if (!raw.trim()) {
-        setStatus(null, "En attente d’un texte");
-        setResStatus(false, "Aucun texte collé");
-      } else if (!text.trim()) {
-        setStatus(false, "Texte collé, mais aucun bloc E/D/Dif valide trouvé");
-        setResStatus(false, "Aucune mesure valide");
-      } else {
-        setStatus(true, `Texte analysé (${nbBlocs} bloc(s))`);
-        setResStatus(totalFails === 0, totalFails === 0 ? "Tout est PASS" : `${totalFails} FAIL détecté(s)`);
-      }
-    }
-
-    function effacer(){
-      document.getElementById("inputText").value = "";
-      analyser();
-    }
-
-    function exemple(){
-      document.getElementById("inputText").value =
-`E: 110.00                                   (HI_LEFT:  0 (MAX:0600) | LOW_LEFT:  1 (MIN:0300) | PASS_LEFT:  0)
-D: 0.00                                      (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)
-Dif E-D: 110.00                              (HI_DIFF:  0 (MAX:0040) | LOW_DIFF:  0 (MIN:-350) | PASS_DIFF:  1)
-
-E: 112.00                                   (HI_LEFT:  0 (MAX:0600) | LOW_LEFT:  1 (MIN:0300) | PASS_LEFT:  0)
-D: 0.00                                      (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)
-Dif E-D: 112.00                              (HI_DIFF:  0 (MAX:0040) | LOW_DIFF:  0 (MIN:-350) | PASS_DIFF:  1)
-
-E: 500.00                                   (HI_LEFT:  0 (MAX:0600) | LOW_LEFT:  1 (MIN:0300) | PASS_LEFT:  0)
-D: 0.00                                      (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)
-Dif E-D: 500.00                              (HI_DIFF:  0 (MAX:0040) | LOW_DIFF:  0 (MIN:-350) | PASS_DIFF:  1)
-
-E: 95,00                                    (HI_LEFT:  0 (MAX:0600) | LOW_LEFT:  1 (MIN:0300) | PASS_LEFT:  0)
-D: 0,00                                      (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)
-Dif E-D: 95,00                               (HI_DIFF:  0 (MAX:0040) | LOW_DIFF:  0 (MIN:-350) | PASS_DIFF:  1)`;
-      analyser();
-    }
+    function setStatus(ok,text){const dot=document.getElementById("statusDot"),t=document.getElementById("statusText");dot.classList.remove("ok","bad");if(ok===true)dot.classList.add("ok");else if(ok===false)dot.classList.add("bad");t.textContent=text}
+    function setResStatus(ok,text){const dot=document.getElementById("resDot"),t=document.getElementById("resText");dot.classList.remove("ok","bad");if(ok===true)dot.classList.add("ok");else if(ok===false)dot.classList.add("bad");t.textContent=text}
+    function renderFormat(){const v=document.getElementById("formatSelect").value;document.getElementById("boxMinMax").classList.toggle("hide",v!=="minmax");document.getElementById("boxKeys").classList.toggle("hide",v!=="keys")}
+    function stats(values){const v=values.filter(Number.isFinite);if(!v.length)return{min:null,max:null};return{min:Math.min(...v),max:Math.max(...v)}}
+    function fmt(x){if(x===null||x===undefined||Number.isNaN(x))return"N/A";return(Math.round(x*1000)/1000).toString()}
+    function buildKeysText(es,ds,difs){return[`difhi ${fmt(difs.max)}`,`diflow ${fmt(difs.min)}`,`hid ${fmt(ds.max)}`,`lowd ${fmt(ds.min)}`,`hie ${fmt(es.max)}`,`lowe ${fmt(es.min)}`].join("\n")}
+    function quantile(sorted,q){const pos=(sorted.length-1)*q,base=Math.floor(pos),rest=pos-base;if(sorted[base+1]===undefined)return sorted[base];return sorted[base]+rest*(sorted[base+1]-sorted[base])}
+    function filterIQR(values,k=1.5){const v=values.filter(Number.isFinite).slice().sort((a,b)=>a-b);if(v.length<4)return values.filter(Number.isFinite);const q1=quantile(v,.25),q3=quantile(v,.75),iqr=q3-q1,lo=q1-k*iqr,hi=q3+k*iqr;return values.filter(x=>Number.isFinite(x)&&x>=lo&&x<=hi)}
+    async function copierKeys(){const el=document.getElementById("keysText"),txt=(el.value||"").trim();if(!txt)return;try{await navigator.clipboard.writeText(txt);setResStatus(true,"Keys copiés")}catch(e){const ta=document.createElement("textarea");ta.value=txt;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.left="-9999px";document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand("copy")}catch(_){}document.body.removeChild(ta);setResStatus(true,"Keys copiés (fallback)")}}
+    const NON_AUTORISES=/[^A-Za-z0-9 \t\r\n:._()|+\-,]/g;
+    function appliquerAllowlist(raw){return String(raw||"").replace(/\r\n?/g,"\n").replace(NON_AUTORISES,"")}
+    function extraireTousLesBlocs(raw){const t=appliquerAllowlist(raw),sp=`[ \t]*`,num2=`-?\\d+[.,]\\d{2}`,d34=`\\d{3,4}`,sd34=`-?\\d{3,4}`,SEP=`\\n(?:[ \t]*\\n)*`;function seg(label){return`\\(${sp}HI_${label}${sp}:${sp}[01]${sp}\\(${sp}MAX${sp}:${sp}${d34}${sp}\\)${sp}\\|${sp}LOW_${label}${sp}:${sp}[01]${sp}\\(${sp}MIN${sp}:${sp}${sd34}${sp}\\)${sp}\\|${sp}PASS_${label}${sp}:${sp}[01]${sp}\\)`}const lineE=`E${sp}:${sp}${num2}${sp}${seg("LEFT")}`,lineD=`D${sp}:${sp}${num2}${sp}${seg("RIGHT")}`,lineDif=`Dif${sp}E-D${sp}:${sp}${num2}${sp}${seg("DIFF")}`,reBloc=new RegExp(`${lineE}${SEP}${lineD}${SEP}${lineDif}`,"g");return[...t.matchAll(reBloc)].map(m=>m[0].trim()).join("\n\n")}
+    function extractValues(text,which){const map={E:/^\s*E\s*:\s*(-?\d+[.,]\d{2})/gm,D:/^\s*D\s*:\s*(-?\d+[.,]\d{2})/gm,DIF:/^\s*Dif\s*E-D\s*:\s*(-?\d+[.,]\d{2})/gm};return[...text.matchAll(map[which]||/$^/gm)].map(m=>parseFloat(m[1].replace(",",".")))}
+    function analyser(){const ta=document.getElementById("inputText"),raw=ta.value||"",cleanedBlocs=extraireTousLesBlocs(raw);if(raw.trim()&&cleanedBlocs!==appliquerAllowlist(raw).trim())ta.value=cleanedBlocs;const text=cleanedBlocs,eValuesRaw=extractValues(text,"E"),dValuesRaw=extractValues(text,"D"),diffValuesRaw=extractValues(text,"DIF"),eValues=filterIQR(eValuesRaw),dValues=filterIQR(dValuesRaw),diffValues=filterIQR(diffValuesRaw),passLeft=(text.match(/PASS_LEFT\s*:\s*1/g)||[]).length,failLeft=(text.match(/PASS_LEFT\s*:\s*0/g)||[]).length,passRight=(text.match(/PASS_RIGHT\s*:\s*1/g)||[]).length,failRight=(text.match(/PASS_RIGHT\s*:\s*0/g)||[]).length,passDiff=(text.match(/PASS_DIFF\s*:\s*1/g)||[]).length,failDiff=(text.match(/PASS_DIFF\s*:\s*0/g)||[]).length,es=stats(eValues),ds=stats(dValues),difs=stats(diffValues),nbBlocs=(text.match(/^\s*E\s*:/gm)||[]).length,totalFails=failLeft+failRight+failDiff;
+      document.getElementById("nbBlocs").textContent=String(nbBlocs);document.getElementById("etatGlobal").textContent=nbBlocs?(totalFails===0?"OK":"À vérifier"):"—";document.getElementById("estat").textContent=`${fmt(es.min)} / ${fmt(es.max)}`;document.getElementById("dstat").textContent=`${fmt(ds.min)} / ${fmt(ds.max)}`;document.getElementById("diffstat").textContent=`${fmt(difs.min)} / ${fmt(difs.max)}`;document.getElementById("keysText").value=buildKeysText(es,ds,difs);document.getElementById("pl").textContent=`✅ ${passLeft}`;document.getElementById("fl").textContent=`❌ ${failLeft}`;document.getElementById("pr").textContent=`✅ ${passRight}`;document.getElementById("fr").textContent=`❌ ${failRight}`;document.getElementById("pd").textContent=`✅ ${passDiff}`;document.getElementById("fd").textContent=`❌ ${failDiff}`;
+      const note=document.getElementById("nearNote"),removedE=Math.max(0,eValuesRaw.length-eValues.length),removedD=Math.max(0,dValuesRaw.length-dValues.length),removedF=Math.max(0,diffValuesRaw.length-diffValues.length);note.textContent=(eValuesRaw.length||dValuesRaw.length||diffValuesRaw.length)?`Filtre valeurs proches (IQR): outliers ignorés -> E:${removedE}, D:${removedD}, Dif:${removedF}`:"";if(!raw.trim()){setStatus(null,"En attente d’un texte");setResStatus(false,"Aucun texte collé")}else if(!text.trim()){setStatus(false,"Texte collé, mais aucun bloc E/D/Dif valide trouvé");setResStatus(false,"Aucune mesure valide")}else{setStatus(true,`Texte analysé (${nbBlocs} bloc(s))`);setResStatus(totalFails===0,"Tout est PASS"===totalFails?"Tout est PASS":`${totalFails} FAIL détecté(s)`)}}
+    function effacer(){document.getElementById("inputText").value="";analyser()}
+    function exemple(){document.getElementById("inputText").value=`E: 110.00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)\nD: 0.00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)\nDif E-D: 110.00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)\n\nE: 112.00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)\nD: 0.00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)\nDif E-D: 112.00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)\n\nE: 500.00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)\nD: 0.00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)\nDif E-D: 500.00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)\n\nE: 95,00 (HI_LEFT: 0 (MAX:0600) | LOW_LEFT: 1 (MIN:0300) | PASS_LEFT: 0)\nD: 0,00 (HI_RIGHT: 0 (MAX:0900) | LOW_RIGHT: 1 (MIN:0500) | PASS_RIGHT: 0)\nDif E-D: 95,00 (HI_DIFF: 0 (MAX:0040) | LOW_DIFF: 0 (MIN:-350) | PASS_DIFF: 1)`;analyser()}
   </script>
 </body>
 </html>
